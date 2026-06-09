@@ -105,27 +105,38 @@ let drawerClickCount = 0;
 let drawerClickTimer = null;
 let drawerOpenTimer = null;
 let outfitIndex = 0;
+let hoverLayerName = null;
 
 const warmaOutfits = [
   {
     name: "正常衣服",
-    nightBg: "assets/room-night-normal.png",
-    dayBg: "assets/room-day-normal.png",
+    layer: "assets/layer-warma-normal.png",
     quote: "换回平时的衣服，继续在床边看雨。"
   },
   {
     name: "睡衣",
-    nightBg: "assets/room-night-pajamas.png",
-    dayBg: "assets/room-day-pajamas.png",
+    layer: "assets/layer-warma-pajamas.png",
     quote: "睡衣模式，今天适合早点休息。"
   },
   {
     name: "居家轻便服",
-    nightBg: "assets/room-night-lounge.png",
-    dayBg: "assets/room-day-lounge.png",
+    layer: "assets/layer-warma-lounge.png",
     quote: "换成居家轻便服，房间还是暖暖的。"
   }
 ];
+
+const layerLabels = {
+  warma: "Warma",
+  lamp: "台灯 · 切换昼夜",
+  drawer: "秘密抽屉",
+  computer: "作品电脑",
+  desk: "项目书桌",
+  notes: "灵感便利贴",
+  photos: "照片墙"
+};
+
+const hitOrder = ["warma", "lamp", "drawer", "computer", "desk", "notes", "photos"];
+const hitAlphaThreshold = 20;
 
 const modal = document.querySelector("#contentModal");
 const modalTitle = document.querySelector("#modalTitle");
@@ -138,6 +149,14 @@ const dataEditor = document.querySelector("#dataEditor");
 const developerStatus = document.querySelector("#developerStatus");
 const room = document.querySelector("#room");
 const roomFadeLayer = document.querySelector("#roomFadeLayer");
+const hitCanvas = document.querySelector("#hitCanvas");
+const hitContext = hitCanvas.getContext("2d", { willReadFrequently: true });
+const hitLabel = document.querySelector("#hitLabel");
+const bgNight = document.querySelector("#bgNight");
+const bgDay = document.querySelector("#bgDay");
+const warmaLayer = document.querySelector("#warmaLayer");
+const objectLayers = Array.from(document.querySelectorAll(".object-layer"));
+const layerMap = Object.fromEntries(objectLayers.map((layer) => [layer.dataset.layer, layer]));
 
 function cloneData(data) {
   return JSON.parse(JSON.stringify(data));
@@ -202,18 +221,11 @@ function showRandomWarmaQuote() {
   showSpeech(quote);
 }
 
-function applyRoomBackground() {
-  const outfit = warmaOutfits[outfitIndex];
-  document.documentElement.style.setProperty("--room-night-bg", `url("${outfit.nightBg}")`);
-  document.documentElement.style.setProperty("--room-day-bg", `url("${outfit.dayBg}")`);
+function activeBackgroundUrl() {
+  return document.body.classList.contains("day-mode") ? bgDay.currentSrc || bgDay.src : bgNight.currentSrc || bgNight.src;
 }
 
-function activeRoomBackgroundUrl() {
-  const outfit = warmaOutfits[outfitIndex];
-  return document.body.classList.contains("day-mode") ? outfit.dayBg : outfit.nightBg;
-}
-
-function crossfadeRoomBackground(updateBackground, previousUrl = activeRoomBackgroundUrl()) {
+function crossfadeRoomBackground(updateBackground, previousUrl = activeBackgroundUrl()) {
   roomFadeLayer.style.backgroundImage = `url("${previousUrl}")`;
   roomFadeLayer.style.transition = "none";
   roomFadeLayer.style.opacity = "1";
@@ -226,12 +238,15 @@ function crossfadeRoomBackground(updateBackground, previousUrl = activeRoomBackg
 }
 
 function cycleWarmaOutfit() {
-  const previousUrl = activeRoomBackgroundUrl();
   outfitIndex = (outfitIndex + 1) % warmaOutfits.length;
   const outfit = warmaOutfits[outfitIndex];
-  crossfadeRoomBackground(() => {
-    applyRoomBackground();
-  }, previousUrl);
+  warmaLayer.style.opacity = "0";
+  window.setTimeout(() => {
+    warmaLayer.src = outfit.layer;
+    warmaLayer.onload = () => {
+      warmaLayer.style.opacity = "1";
+    };
+  }, 160);
   showSpeech(outfit.quote);
 }
 
@@ -263,6 +278,104 @@ function handleDrawerSecret() {
       drawerClickCount = 0;
     }
   }, 420);
+}
+
+function getRoomImageCoordinates(event) {
+  const rect = room.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  const baseImage = bgNight.complete && bgNight.naturalWidth ? bgNight : objectLayers.find((img) => img.complete && img.naturalWidth);
+  const naturalWidth = baseImage?.naturalWidth || 1920;
+  const naturalHeight = baseImage?.naturalHeight || 1080;
+
+  return {
+    cssX: x,
+    cssY: y,
+    imageX: Math.round((x / rect.width) * naturalWidth),
+    imageY: Math.round((y / rect.height) * naturalHeight),
+    naturalWidth,
+    naturalHeight
+  };
+}
+
+function pixelAlphaAt(image, imageX, imageY, naturalWidth, naturalHeight) {
+  if (!image || !image.complete || !image.naturalWidth) return 0;
+  if (imageX < 0 || imageY < 0 || imageX >= naturalWidth || imageY >= naturalHeight) return 0;
+
+  hitCanvas.width = naturalWidth;
+  hitCanvas.height = naturalHeight;
+  hitContext.clearRect(0, 0, naturalWidth, naturalHeight);
+
+  try {
+    hitContext.drawImage(image, 0, 0, naturalWidth, naturalHeight);
+    return hitContext.getImageData(imageX, imageY, 1, 1).data[3];
+  } catch {
+    return 0;
+  }
+}
+
+function detectLayerAt(event) {
+  const point = getRoomImageCoordinates(event);
+
+  for (const name of hitOrder) {
+    const layer = layerMap[name];
+    const alpha = pixelAlphaAt(layer, point.imageX, point.imageY, point.naturalWidth, point.naturalHeight);
+    if (alpha > hitAlphaThreshold) {
+      return { name, ...point };
+    }
+  }
+
+  if (isBedFallbackHit(point)) {
+    return { name: "bed", ...point };
+  }
+
+  return null;
+}
+
+function isBedFallbackHit(point) {
+  const x = point.imageX / point.naturalWidth;
+  const y = point.imageY / point.naturalHeight;
+  return x >= 0.02 && x <= 0.68 && y >= 0.72 && y <= 0.98;
+}
+
+function setHoveredLayer(name, point) {
+  if (hoverLayerName === name) return;
+  objectLayers.forEach((layer) => layer.classList.toggle("is-hovered", layer.dataset.layer === name));
+  hoverLayerName = name;
+
+  if (!name) {
+    hitLabel.classList.remove("is-visible");
+    return;
+  }
+
+  hitLabel.textContent = layerLabels[name] || "可互动角落";
+  if (point) {
+    hitLabel.style.left = `${point.cssX}px`;
+    hitLabel.style.top = `${point.cssY}px`;
+  }
+  hitLabel.classList.add("is-visible");
+}
+
+function handleLayerClick(event) {
+  const hit = detectLayerAt(event);
+  if (!hit) return;
+
+  if (hit.name === "lamp") {
+    toggleDayMode();
+    return;
+  }
+
+  if (hit.name === "warma") {
+    cycleWarmaOutfit();
+    return;
+  }
+
+  if (hit.name === "drawer") {
+    handleDrawerSecret();
+    return;
+  }
+
+  openPanel(hit.name);
 }
 
 function openDeveloperPanel() {
@@ -313,30 +426,40 @@ function resetEditorData() {
   showSpeech("房间恢复到了最初的样子。");
 }
 
-document.querySelectorAll("[data-panel]").forEach((item) => {
-  item.addEventListener("click", () => {
-    const panelName = item.dataset.panel;
-    if (panelName === "drawer") {
-      handleDrawerSecret();
-      return;
-    }
-    openPanel(panelName);
+function preloadImages() {
+  [
+    "assets/layer-bg-night.png",
+    "assets/layer-bg-day.png",
+    ...warmaOutfits.map((outfit) => outfit.layer),
+    ...objectLayers.map((layer) => layer.getAttribute("src"))
+  ].forEach((src) => {
+    const image = new Image();
+    image.src = src;
   });
-});
+}
 
-document.querySelector("[data-action='enter']").addEventListener("click", () => {
+room.addEventListener("click", handleLayerClick);
+room.addEventListener("mousemove", (event) => {
+  const hit = detectLayerAt(event);
+  setHoveredLayer(hit?.name || null, hit);
+});
+room.addEventListener("mouseleave", () => setHoveredLayer(null));
+
+const enterButton = document.querySelector("[data-action='enter']");
+const randomButton = document.querySelector("[data-action='random-room']");
+const drawerButton = document.querySelector("[data-action='drawer']");
+
+enterButton?.addEventListener("click", () => {
   room.scrollIntoView({ behavior: "smooth", block: "center" });
   showSpeech("灯一直亮着，欢迎进来坐坐。");
 });
 
-document.querySelector("[data-action='random-room']").addEventListener("click", () => {
+randomButton?.addEventListener("click", () => {
   const panels = ["window", "bed", "desk", "computer", "photos", "notes"];
   openPanel(panels[Math.floor(Math.random() * panels.length)]);
 });
 
-document.querySelector("[data-action='drawer']").addEventListener("click", handleDrawerSecret);
-document.querySelector("#lampToggle").addEventListener("click", toggleDayMode);
-document.querySelector("#warma").addEventListener("click", cycleWarmaOutfit);
+drawerButton?.addEventListener("click", handleDrawerSecret);
 closeModalButton.addEventListener("click", closePanel);
 document.querySelector("#closeDeveloper").addEventListener("click", closeDeveloperPanel);
 document.querySelector("#applyData").addEventListener("click", applyEditorData);
@@ -359,10 +482,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("load", () => {
-  applyRoomBackground();
-  warmaOutfits.flatMap((outfit) => [outfit.nightBg, outfit.dayBg]).forEach((src) => {
-    const image = new Image();
-    image.src = src;
-  });
+  preloadImages();
+  room.classList.add("is-ready");
   window.setTimeout(() => showSpeech(defaultSiteData.warmaQuotes[0]), 600);
 });
