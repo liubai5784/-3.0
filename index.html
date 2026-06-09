@@ -10,13 +10,13 @@
 <body>
   <main class="page-shell">
     <section class="intro" aria-labelledby="site-title">
-      <p class="eyebrow">A warm little personal room</p>
+      <p class="eyebrow" id="siteEyebrow">A warm little personal room</p>
       <h1 id="site-title">留白的小房间</h1>
-      <p class="subtitle">这里放着一些灵感、碎碎念、作品和没整理完的小心事。</p>
+      <p class="subtitle" id="siteSubtitle">这里放着一些灵感、碎碎念、作品和没整理完的小心事。</p>
       <div class="hero-actions" aria-label="首页操作">
         <button class="soft-button" data-action="enter">进入房间</button>
         <button class="soft-button secondary" data-action="random-room">随便看看</button>
-        <button class="soft-button ghost" data-action="drawer">找找彩蛋</button>
+        <a class="soft-button ghost" href="admin.html">房间设置</a>
       </div>
     </section>
 
@@ -24,12 +24,11 @@
       <div class="layer-room" id="room" aria-label="可互动的小房间">
         <img class="room-layer bg-layer bg-night" id="bgNight" src="assets/layer-bg-night.png" alt="">
         <img class="room-layer bg-layer bg-day" id="bgDay" src="assets/layer-bg-day.png" alt="">
-        <img class="room-layer object-layer" data-layer="photos" src="assets/layer-photos.png" alt="照片墙">
-        <img class="room-layer object-layer" data-layer="notes" src="assets/layer-notes.png" alt="便利贴">
-        <img class="room-layer object-layer" data-layer="desk" src="assets/layer-desk-items.png" alt="书桌小物件">
-        <img class="room-layer object-layer" data-layer="computer" src="assets/layer-computer.png" alt="电脑">
-        <img class="room-layer object-layer" data-layer="drawer" src="assets/layer-drawer.png" alt="抽屉">
-        <img class="room-layer object-layer" data-layer="lamp" src="assets/layer-lamp.png" alt="台灯">
+        <img class="room-layer object-layer" data-layer="photos" id="photosLayer" src="assets/layer-photos.png" alt="照片墙">
+        <img class="room-layer object-layer" data-layer="notes" id="notesLayer" src="assets/layer-notes.png" alt="便利贴">
+        <img class="room-layer object-layer" data-layer="desk" id="deskLayer" src="assets/layer-desk-items.png" alt="书桌小物件">
+        <img class="room-layer object-layer" data-layer="computer" id="computerLayer" src="assets/layer-computer.png" alt="电脑">
+        <img class="room-layer object-layer" data-layer="lamp" id="lampLayer" src="assets/layer-lamp.png" alt="台灯">
         <img class="room-layer object-layer" id="warmaLayer" data-layer="warma" src="assets/layer-warma-normal.png" alt="Warma">
         <canvas id="hitCanvas" class="hit-canvas" aria-hidden="true"></canvas>
         <div class="room-fade-layer" id="roomFadeLayer" aria-hidden="true"></div>
@@ -45,27 +44,6 @@
       <p class="modal-kicker" id="modalKicker">Room corner</p>
       <h2 id="modalTitle">标题</h2>
       <div class="modal-content" id="modalContent"></div>
-    </div>
-  </div>
-
-  <div class="developer-panel" id="developerPanel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="developerTitle">
-    <div class="developer-card">
-      <div class="developer-head">
-        <div>
-          <p class="modal-kicker">Hidden console</p>
-          <h2 id="developerTitle">开发者数据面板</h2>
-        </div>
-        <button class="icon-button" id="closeDeveloper" type="button" aria-label="关闭开发者面板">×</button>
-      </div>
-      <p class="developer-help">在这里编辑房间数据 JSON。点击“应用修改”后会立即刷新页面内容。</p>
-      <textarea id="dataEditor" spellcheck="false" aria-label="网站数据 JSON 编辑器"></textarea>
-      <p class="developer-status" id="developerStatus" aria-live="polite">连续点击秘密抽屉 5 次可以再次打开这里。</p>
-      <div class="developer-actions">
-        <button class="soft-button" id="applyData" type="button">应用修改</button>
-        <button class="soft-button secondary" id="exportData" type="button">导出 JSON</button>
-        <button class="soft-button secondary" id="importData" type="button">导入 JSON</button>
-        <button class="soft-button ghost" id="resetData" type="button">重置默认</button>
-      </div>
     </div>
   </div>
 
