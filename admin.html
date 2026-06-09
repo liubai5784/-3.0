@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>房间设置 · 留白的小房间</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-hero">
+      <p class="eyebrow">Room editor</p>
+      <h1>房间设置</h1>
+      <p>这里用网页 UI 修改首页文字、弹窗内容、Warma 台词和图层路径。修改会保存在当前浏览器里。</p>
+      <div class="top-actions">
+        <a class="soft-button" href="index.html">返回房间</a>
+        <button class="soft-button secondary" id="saveBtn" type="button">保存设置</button>
+        <button class="soft-button ghost" id="resetBtn" type="button">恢复默认</button>
+      </div>
+      <p class="status" id="status">未保存修改。</p>
+    </header>
+
+    <section class="editor-grid">
+      <article class="card">
+        <h2>首页文字</h2>
+        <label>小标题<input id="siteEyebrow" type="text"></label>
+        <label>主标题<input id="siteTitle" type="text"></label>
+        <label>简介<textarea id="siteSubtitle" rows="3"></textarea></label>
+      </article>
+
+      <article class="card">
+        <h2>背景图层</h2>
+        <label>夜晚背景<input id="layerBgNight" type="text"></label>
+        <label>日出背景<input id="layerBgDay" type="text"></label>
+      </article>
+
+      <article class="card wide">
+        <h2>互动图层路径</h2>
+        <div class="two-col">
+          <label>台灯<input id="layerLamp" type="text"></label>
+          <label>电脑<input id="layerComputer" type="text"></label>
+          <label>书桌物件<input id="layerDesk" type="text"></label>
+          <label>照片墙<input id="layerPhotos" type="text"></label>
+          <label>便利贴<input id="layerNotes" type="text"></label>
+        </div>
+      </article>
+
+      <article class="card wide">
+        <h2>Warma 换装</h2>
+        <div id="outfitList" class="stack"></div>
+      </article>
+
+      <article class="card wide">
+        <h2>Warma 台词</h2>
+        <p class="hint">一行一句。</p>
+        <textarea id="warmaQuotes" rows="7"></textarea>
+      </article>
+
+      <article class="card wide">
+        <h2>弹窗内容</h2>
+        <div id="panelList" class="panel-list"></div>
+      </article>
+
+      <article class="card wide">
+        <h2>备份 / 导入</h2>
+        <p class="hint">这里是完整配置 JSON。保存设置会同步更新下面的 JSON；你也可以粘贴之前导出的 JSON 后点“从 JSON 导入”。</p>
+        <textarea id="jsonBox" rows="12"></textarea>
+        <div class="inline-actions">
+          <button class="soft-button secondary" id="exportBtn" type="button">复制 JSON</button>
+          <button class="soft-button ghost" id="importBtn" type="button">从 JSON 导入</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "liubai-room-config";
+
+    const defaultRoomConfig = {
+      site: {
+        eyebrow: "A warm little personal room",
+        title: "留白的小房间",
+        subtitle: "这里放着一些灵感、碎碎念、作品和没整理完的小心事。"
+      },
+      layers: {
+        bgNight: "assets/layer-bg-night.png",
+        bgDay: "assets/layer-bg-day.png",
+        photos: "assets/layer-photos.png",
+        notes: "assets/layer-notes.png",
+        desk: "assets/layer-desk-items.png",
+        computer: "assets/layer-computer.png",
+        lamp: "assets/layer-lamp.png"
+      },
+      outfits: [
+        { name: "正常衣服", layer: "assets/layer-warma-normal.png", quote: "换回平时的衣服，继续在床边看雨。" },
+        { name: "睡衣", layer: "assets/layer-warma-pajamas.png", quote: "睡衣模式，今天适合早点休息。" },
+        { name: "居家轻便服", layer: "assets/layer-warma-lounge.png", quote: "换成居家轻便服，房间还是暖暖的。" }
+      ],
+      panels: {
+        window: { kicker: "Window", title: "今日心情 / 今日天空", blocks: [{ heading: "今日心情", text: "像一盏放在办公桌上的暖台灯，可以慢慢整理，也可以什么都不急。" }, { heading: "今日天空", text: "窗外会跟着台灯切换：灯亮时是安静星空，灯调亮后是柔和日出。" }] },
+        bed: { kicker: "Bed", title: "碎碎念和日常短句", blocks: [{ heading: "床边短句", items: ["今天也可以慢慢来。", "把没想清楚的事情先放在枕头旁边。", "柔软不是退后，是给自己留一点呼吸。"] }] },
+        desk: { kicker: "Desk", title: "我的网页项目 / 小工具", blocks: [{ heading: "正在整理", items: ["个人网站第一版", "灵感便利贴小工具", "图片收藏角落"] }, { heading: "想做的东西", text: "一些轻量、安静、有一点陪伴感的网页小玩具。" }] },
+        computer: { kicker: "Computer", title: "作品展示", blocks: [{ heading: "展示柜", text: "这里之后可以放网页作品、设计稿、视频、生成图项目，或者任何想认真收藏起来的东西。" }] },
+        photos: { kicker: "Photo wall", title: "图片作品 / 生成图 / 照片收藏", blocks: [{ heading: "照片墙", items: ["一张夜晚房间氛围图", "几张喜欢的颜色参考", "未来的 Warma 换装记录"] }] },
+        notes: { kicker: "Sticky notes", title: "灵感记录 / 随手想法", blocks: [{ heading: "便利贴", items: ["把首页做成真正能逛的小房间。", "每个角落都留一点未完成感。", "灯光切换时，房间像换了一种心情。"] }] }
+      },
+      warmaQuotes: ["欢迎来到留白的小房间。", "今天也可以慢慢来。", "你发现了一个没整理完的小角落。", "灯一直亮着，欢迎进来坐坐。", "要看看今天的灵感吗？"]
+    };
+
+    const panelNames = {
+      window: "窗户 / 天空",
+      bed: "床",
+      desk: "书桌物件",
+      computer: "电脑",
+      photos: "照片墙",
+      notes: "便利贴"
+    };
+
+    let config = loadConfig();
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function loadConfig() {
+      try {
+        return mergeConfig(defaultRoomConfig, JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"));
+      } catch {
+        return clone(defaultRoomConfig);
+      }
+    }
+
+    function mergeConfig(base, override) {
+      if (!override || typeof override !== "object") return clone(base);
+      const merged = clone(base);
+      if (override.site) merged.site = { ...merged.site, ...override.site };
+      if (override.layers) merged.layers = { ...merged.layers, ...override.layers };
+      if (Array.isArray(override.outfits)) merged.outfits = override.outfits;
+      if (override.panels) merged.panels = { ...merged.panels, ...override.panels };
+      if (Array.isArray(override.warmaQuotes)) merged.warmaQuotes = override.warmaQuotes;
+      return merged;
+    }
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function setStatus(text) {
+      $("status").textContent = text;
+    }
+
+    function blockToText(blocks = []) {
+      return blocks.map((block) => {
+        const heading = block.heading || "";
+        const body = Array.isArray(block.items) ? block.items.join("\n") : block.text || "";
+        return `${heading}\n${body}`.trim();
+      }).join("\n---\n");
+    }
+
+    function textToBlocks(value) {
+      return value.split(/\n---\n/g).map((section) => {
+        const lines = section.split("\n").map((line) => line.trim()).filter(Boolean);
+        const heading = lines.shift() || "";
+        if (lines.length <= 1) return { heading, text: lines[0] || "" };
+        return { heading, items: lines };
+      }).filter((block) => block.heading || block.text || block.items?.length);
+    }
+
+    function renderOutfits() {
+      $("outfitList").innerHTML = config.outfits.map((outfit, index) => `
+        <div class="subcard" data-outfit="${index}">
+          <h3>第 ${index + 1} 套</h3>
+          <label>名称<input data-field="name" type="text" value="${escapeAttr(outfit.name || "")}"></label>
+          <label>图层路径<input data-field="layer" type="text" value="${escapeAttr(outfit.layer || "")}"></label>
+          <label>切换台词<textarea data-field="quote" rows="2">${escapeText(outfit.quote || "")}</textarea></label>
+        </div>
+      `).join("");
+    }
+
+    function renderPanels() {
+      $("panelList").innerHTML = Object.entries(panelNames).map(([key, label]) => {
+        const panel = config.panels[key] || { kicker: "", title: "", blocks: [] };
+        return `
+          <details class="subcard" data-panel="${key}" open>
+            <summary>${label}</summary>
+            <label>英文角标<input data-field="kicker" type="text" value="${escapeAttr(panel.kicker || "")}"></label>
+            <label>弹窗标题<input data-field="title" type="text" value="${escapeAttr(panel.title || "")}"></label>
+            <label>内容<textarea data-field="blocks" rows="6">${escapeText(blockToText(panel.blocks))}</textarea></label>
+            <p class="hint">格式：第一行是小标题，下面每行是正文/列表项。多个内容块用单独一行 --- 分隔。</p>
+          </details>
+        `;
+      }).join("");
+    }
+
+    function escapeAttr(value) {
+      return String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function escapeText(value) {
+      return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
+    function renderForm() {
+      $("siteEyebrow").value = config.site.eyebrow || "";
+      $("siteTitle").value = config.site.title || "";
+      $("siteSubtitle").value = config.site.subtitle || "";
+      $("layerBgNight").value = config.layers.bgNight || "";
+      $("layerBgDay").value = config.layers.bgDay || "";
+      $("layerLamp").value = config.layers.lamp || "";
+      $("layerComputer").value = config.layers.computer || "";
+      $("layerDesk").value = config.layers.desk || "";
+      $("layerPhotos").value = config.layers.photos || "";
+      $("layerNotes").value = config.layers.notes || "";
+      $("warmaQuotes").value = config.warmaQuotes.join("\n");
+      renderOutfits();
+      renderPanels();
+      syncJsonBox();
+    }
+
+    function collectForm() {
+      config.site.eyebrow = $("siteEyebrow").value.trim();
+      config.site.title = $("siteTitle").value.trim();
+      config.site.subtitle = $("siteSubtitle").value.trim();
+      config.layers.bgNight = $("layerBgNight").value.trim();
+      config.layers.bgDay = $("layerBgDay").value.trim();
+      config.layers.lamp = $("layerLamp").value.trim();
+      config.layers.computer = $("layerComputer").value.trim();
+      config.layers.desk = $("layerDesk").value.trim();
+      config.layers.photos = $("layerPhotos").value.trim();
+      config.layers.notes = $("layerNotes").value.trim();
+      config.warmaQuotes = $("warmaQuotes").value.split("\n").map((line) => line.trim()).filter(Boolean);
+
+      document.querySelectorAll("[data-outfit]").forEach((card) => {
+        const index = Number(card.dataset.outfit);
+        config.outfits[index] = config.outfits[index] || {};
+        card.querySelectorAll("[data-field]").forEach((field) => {
+          config.outfits[index][field.dataset.field] = field.value.trim();
+        });
+      });
+
+      document.querySelectorAll("[data-panel]").forEach((card) => {
+        const key = card.dataset.panel;
+        config.panels[key] = config.panels[key] || {};
+        config.panels[key].kicker = card.querySelector("[data-field='kicker']").value.trim();
+        config.panels[key].title = card.querySelector("[data-field='title']").value.trim();
+        config.panels[key].blocks = textToBlocks(card.querySelector("[data-field='blocks']").value);
+      });
+    }
+
+    function saveConfig() {
+      collectForm();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      syncJsonBox();
+      setStatus("已保存。回到首页刷新后生效。");
+    }
+
+    function syncJsonBox() {
+      $("jsonBox").value = JSON.stringify(config, null, 2);
+    }
+
+    $("saveBtn").addEventListener("click", saveConfig);
+    $("resetBtn").addEventListener("click", () => {
+      config = clone(defaultRoomConfig);
+      localStorage.removeItem(STORAGE_KEY);
+      renderForm();
+      setStatus("已恢复默认设置。");
+    });
+    $("exportBtn").addEventListener("click", async () => {
+      collectForm();
+      syncJsonBox();
+      $("jsonBox").select();
+      try {
+        await navigator.clipboard.writeText($("jsonBox").value);
+        setStatus("JSON 已复制到剪贴板。");
+      } catch {
+        setStatus("JSON 已显示在文本框里，可以手动复制。");
+      }
+    });
+    $("importBtn").addEventListener("click", () => {
+      try {
+        config = mergeConfig(defaultRoomConfig, JSON.parse($("jsonBox").value));
+        renderForm();
+        saveConfig();
+        setStatus("已从 JSON 导入并保存。");
+      } catch (error) {
+        setStatus(`JSON 格式有问题：${error.message}`);
+      }
+    });
+
+    document.addEventListener("input", () => {
+      setStatus("有未保存修改。");
+    });
+
+    renderForm();
+  </script>
+</body>
+</html>
