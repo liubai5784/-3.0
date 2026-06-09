@@ -1,95 +1,82 @@
-const defaultSiteData = {
-  window: {
-    kicker: "Window",
-    title: "今日心情 / 今日天空",
-    blocks: [
-      {
-        heading: "今日心情",
-        text: "像一盏放在办公桌上的暖台灯，可以慢慢整理，也可以什么都不急。"
-      },
-      {
-        heading: "今日天空",
-        text: "窗外会跟着台灯切换：灯亮时是安静星空，灯调亮后是柔和日出。"
-      }
-    ]
+const STORAGE_KEY = "liubai-room-config";
+
+const defaultRoomConfig = {
+  site: {
+    eyebrow: "A warm little personal room",
+    title: "留白的小房间",
+    subtitle: "这里放着一些灵感、碎碎念、作品和没整理完的小心事。"
   },
-  bed: {
-    kicker: "Bed",
-    title: "碎碎念和日常短句",
-    blocks: [
-      {
-        heading: "床边短句",
-        items: ["今天也可以慢慢来。", "把没想清楚的事情先放在枕头旁边。", "柔软不是退后，是给自己留一点呼吸。"]
-      }
-    ]
+  layers: {
+    bgNight: "assets/layer-bg-night.png",
+    bgDay: "assets/layer-bg-day.png",
+    photos: "assets/layer-photos.png",
+    notes: "assets/layer-notes.png",
+    desk: "assets/layer-desk-items.png",
+    computer: "assets/layer-computer.png",
+    lamp: "assets/layer-lamp.png"
   },
-  desk: {
-    kicker: "Desk",
-    title: "我的网页项目 / 小工具",
-    blocks: [
-      {
-        heading: "正在整理",
-        items: ["个人网站第一版", "灵感便利贴小工具", "图片收藏角落"]
-      },
-      {
-        heading: "想做的东西",
-        text: "一些轻量、安静、有一点陪伴感的网页小玩具。"
-      }
-    ]
-  },
-  computer: {
-    kicker: "Computer",
-    title: "作品展示",
-    blocks: [
-      {
-        heading: "展示柜",
-        text: "这里之后可以放网页作品、设计稿、视频、生成图项目，或者任何想认真收藏起来的东西。"
-      }
-    ]
-  },
-  photos: {
-    kicker: "Photo wall",
-    title: "图片作品 / 生成图 / 照片收藏",
-    blocks: [
-      {
-        heading: "照片墙",
-        items: ["一张夜晚房间氛围图", "几张喜欢的颜色参考", "未来的 Warma 换装记录"]
-      }
-    ]
-  },
-  notes: {
-    kicker: "Sticky notes",
-    title: "灵感记录 / 随手想法",
-    blocks: [
-      {
-        heading: "便利贴",
-        items: ["把首页做成真正能逛的小房间。", "每个角落都留一点未完成感。", "灯光切换时，房间像换了一种心情。"]
-      }
-    ]
-  },
-  wardrobe: {
-    kicker: "Wardrobe",
-    title: "Warma 换装图鉴",
-    blocks: [
-      {
-        heading: "衣柜里暂时有",
-        items: ["奶白色居家裙", "粉白小披肩", "深蓝星星发夹"]
-      },
-      {
-        heading: "下一步",
-        text: "之后可以把不同服装插画放进 assets 文件夹，再在这里做成图鉴。"
-      }
-    ]
-  },
-  drawer: {
-    kicker: "Secret drawer",
-    title: "隐藏彩蛋",
-    blocks: [
-      {
-        heading: "你拉开了抽屉",
-        text: "里面有一张小纸条：这里还没整理完，但已经给你留了位置。"
-      }
-    ]
+  outfits: [
+    {
+      name: "正常衣服",
+      layer: "assets/layer-warma-normal.png",
+      quote: "换回平时的衣服，继续在床边看雨。"
+    },
+    {
+      name: "睡衣",
+      layer: "assets/layer-warma-pajamas.png",
+      quote: "睡衣模式，今天适合早点休息。"
+    },
+    {
+      name: "居家轻便服",
+      layer: "assets/layer-warma-lounge.png",
+      quote: "换成居家轻便服，房间还是暖暖的。"
+    }
+  ],
+  panels: {
+    window: {
+      kicker: "Window",
+      title: "今日心情 / 今日天空",
+      blocks: [
+        { heading: "今日心情", text: "像一盏放在办公桌上的暖台灯，可以慢慢整理，也可以什么都不急。" },
+        { heading: "今日天空", text: "窗外会跟着台灯切换：灯亮时是安静星空，灯调亮后是柔和日出。" }
+      ]
+    },
+    bed: {
+      kicker: "Bed",
+      title: "碎碎念和日常短句",
+      blocks: [
+        { heading: "床边短句", items: ["今天也可以慢慢来。", "把没想清楚的事情先放在枕头旁边。", "柔软不是退后，是给自己留一点呼吸。"] }
+      ]
+    },
+    desk: {
+      kicker: "Desk",
+      title: "我的网页项目 / 小工具",
+      blocks: [
+        { heading: "正在整理", items: ["个人网站第一版", "灵感便利贴小工具", "图片收藏角落"] },
+        { heading: "想做的东西", text: "一些轻量、安静、有一点陪伴感的网页小玩具。" }
+      ]
+    },
+    computer: {
+      kicker: "Computer",
+      title: "作品展示",
+      blocks: [
+        { heading: "展示柜", text: "这里之后可以放网页作品、设计稿、视频、生成图项目，或者任何想认真收藏起来的东西。" }
+      ]
+    },
+    photos: {
+      kicker: "Photo wall",
+      title: "图片作品 / 生成图 / 照片收藏",
+      blocks: [
+        { heading: "照片墙", items: ["一张夜晚房间氛围图", "几张喜欢的颜色参考", "未来的 Warma 换装记录"] }
+      ]
+    },
+    notes: {
+      kicker: "Sticky notes",
+      title: "灵感记录 / 随手想法",
+      blocks: [
+        { heading: "便利贴", items: ["把首页做成真正能逛的小房间。", "每个角落都留一点未完成感。", "灯光切换时，房间像换了一种心情。"] }
+      ]
+    }
   },
   warmaQuotes: [
     "欢迎来到留白的小房间。",
@@ -100,42 +87,21 @@ const defaultSiteData = {
   ]
 };
 
-let siteData = cloneData(defaultSiteData);
-let drawerClickCount = 0;
-let drawerClickTimer = null;
-let drawerOpenTimer = null;
+let roomConfig = loadRoomConfig();
+let siteData = roomConfig.panels;
 let outfitIndex = 0;
 let hoverLayerName = null;
-
-const warmaOutfits = [
-  {
-    name: "正常衣服",
-    layer: "assets/layer-warma-normal.png",
-    quote: "换回平时的衣服，继续在床边看雨。"
-  },
-  {
-    name: "睡衣",
-    layer: "assets/layer-warma-pajamas.png",
-    quote: "睡衣模式，今天适合早点休息。"
-  },
-  {
-    name: "居家轻便服",
-    layer: "assets/layer-warma-lounge.png",
-    quote: "换成居家轻便服，房间还是暖暖的。"
-  }
-];
 
 const layerLabels = {
   warma: "Warma",
   lamp: "台灯 · 切换昼夜",
-  drawer: "秘密抽屉",
   computer: "作品电脑",
   desk: "项目书桌",
   notes: "灵感便利贴",
   photos: "照片墙"
 };
 
-const hitOrder = ["warma", "lamp", "drawer", "computer", "desk", "notes", "photos"];
+const hitOrder = ["warma", "lamp", "computer", "desk", "notes", "photos"];
 const hitAlphaThreshold = 20;
 
 const modal = document.querySelector("#contentModal");
@@ -144,9 +110,6 @@ const modalKicker = document.querySelector("#modalKicker");
 const modalContent = document.querySelector("#modalContent");
 const closeModalButton = document.querySelector(".close-modal");
 const speechBubble = document.querySelector("#speechBubble");
-const developerPanel = document.querySelector("#developerPanel");
-const dataEditor = document.querySelector("#dataEditor");
-const developerStatus = document.querySelector("#developerStatus");
 const room = document.querySelector("#room");
 const roomFadeLayer = document.querySelector("#roomFadeLayer");
 const hitCanvas = document.querySelector("#hitCanvas");
@@ -160,6 +123,26 @@ const layerMap = Object.fromEntries(objectLayers.map((layer) => [layer.dataset.l
 
 function cloneData(data) {
   return JSON.parse(JSON.stringify(data));
+}
+
+function mergeConfig(base, override) {
+  if (!override || typeof override !== "object") return cloneData(base);
+  const merged = cloneData(base);
+  if (override.site) merged.site = { ...merged.site, ...override.site };
+  if (override.layers) merged.layers = { ...merged.layers, ...override.layers };
+  if (Array.isArray(override.outfits)) merged.outfits = override.outfits;
+  if (override.panels) merged.panels = { ...merged.panels, ...override.panels };
+  if (Array.isArray(override.warmaQuotes)) merged.warmaQuotes = override.warmaQuotes;
+  return merged;
+}
+
+function loadRoomConfig() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    return mergeConfig(defaultRoomConfig, saved);
+  } catch {
+    return cloneData(defaultRoomConfig);
+  }
 }
 
 function escapeHtml(value) {
@@ -185,6 +168,22 @@ function renderBlocks(blocks = []) {
 
     return `<div class="content-block">${heading}${text}${items}</div>`;
   }).join("");
+}
+
+function applyConfigToPage() {
+  document.title = roomConfig.site.title || "留白的小房间";
+  document.querySelector("#siteEyebrow").textContent = roomConfig.site.eyebrow || "";
+  document.querySelector("#site-title").textContent = roomConfig.site.title || "留白的小房间";
+  document.querySelector("#siteSubtitle").textContent = roomConfig.site.subtitle || "";
+
+  bgNight.src = roomConfig.layers.bgNight;
+  bgDay.src = roomConfig.layers.bgDay;
+  layerMap.photos.src = roomConfig.layers.photos;
+  layerMap.notes.src = roomConfig.layers.notes;
+  layerMap.desk.src = roomConfig.layers.desk;
+  layerMap.computer.src = roomConfig.layers.computer;
+  layerMap.lamp.src = roomConfig.layers.lamp;
+  warmaLayer.src = roomConfig.outfits[0]?.layer || "assets/layer-warma-normal.png";
 }
 
 function openPanel(panelName) {
@@ -214,9 +213,9 @@ function showSpeech(text) {
 }
 
 function showRandomWarmaQuote() {
-  const quotes = Array.isArray(siteData.warmaQuotes) && siteData.warmaQuotes.length
-    ? siteData.warmaQuotes
-    : defaultSiteData.warmaQuotes;
+  const quotes = Array.isArray(roomConfig.warmaQuotes) && roomConfig.warmaQuotes.length
+    ? roomConfig.warmaQuotes
+    : defaultRoomConfig.warmaQuotes;
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
   showSpeech(quote);
 }
@@ -238,8 +237,9 @@ function crossfadeRoomBackground(updateBackground, previousUrl = activeBackgroun
 }
 
 function cycleWarmaOutfit() {
-  outfitIndex = (outfitIndex + 1) % warmaOutfits.length;
-  const outfit = warmaOutfits[outfitIndex];
+  const outfits = roomConfig.outfits.length ? roomConfig.outfits : defaultRoomConfig.outfits;
+  outfitIndex = (outfitIndex + 1) % outfits.length;
+  const outfit = outfits[outfitIndex];
   warmaLayer.style.opacity = "0";
   window.setTimeout(() => {
     warmaLayer.src = outfit.layer;
@@ -247,7 +247,7 @@ function cycleWarmaOutfit() {
       warmaLayer.style.opacity = "1";
     };
   }, 160);
-  showSpeech(outfit.quote);
+  showSpeech(outfit.quote || outfit.name || "换装完成。");
 }
 
 function toggleDayMode() {
@@ -256,28 +256,6 @@ function toggleDayMode() {
   });
   const isDay = document.body.classList.contains("day-mode");
   showSpeech(isDay ? "台灯调亮了，窗外慢慢变成日出。" : "台灯重新亮起，窗外回到安静星空。");
-}
-
-function handleDrawerSecret() {
-  drawerClickCount += 1;
-  window.clearTimeout(drawerClickTimer);
-  window.clearTimeout(drawerOpenTimer);
-  drawerClickTimer = window.setTimeout(() => {
-    drawerClickCount = 0;
-  }, 1600);
-
-  if (drawerClickCount >= 5) {
-    drawerClickCount = 0;
-    openDeveloperPanel();
-    return;
-  }
-
-  drawerOpenTimer = window.setTimeout(() => {
-    if (drawerClickCount > 0 && drawerClickCount < 5) {
-      openPanel("drawer");
-      drawerClickCount = 0;
-    }
-  }, 420);
 }
 
 function getRoomImageCoordinates(event) {
@@ -370,69 +348,17 @@ function handleLayerClick(event) {
     return;
   }
 
-  if (hit.name === "drawer") {
-    handleDrawerSecret();
-    return;
-  }
-
   openPanel(hit.name);
-}
-
-function openDeveloperPanel() {
-  dataEditor.value = JSON.stringify(siteData, null, 2);
-  developerStatus.textContent = "开发者面板已打开，可以编辑 JSON 后应用。";
-  developerPanel.classList.add("is-open");
-  developerPanel.setAttribute("aria-hidden", "false");
-  dataEditor.focus();
-}
-
-function closeDeveloperPanel() {
-  developerPanel.classList.remove("is-open");
-  developerPanel.setAttribute("aria-hidden", "true");
-}
-
-function applyEditorData() {
-  try {
-    const parsed = JSON.parse(dataEditor.value);
-    siteData = parsed;
-    developerStatus.textContent = "修改已应用。现在点击房间物品会使用新数据。";
-    showSpeech("数据已经悄悄更新好了。");
-  } catch (error) {
-    developerStatus.textContent = `JSON 格式有问题：${error.message}`;
-  }
-}
-
-async function exportEditorData() {
-  const json = JSON.stringify(siteData, null, 2);
-  dataEditor.value = json;
-  dataEditor.select();
-
-  try {
-    await navigator.clipboard.writeText(json);
-    developerStatus.textContent = "当前 JSON 已放进剪贴板，也显示在编辑框里。";
-  } catch {
-    developerStatus.textContent = "当前 JSON 已显示在编辑框里，可以手动复制。";
-  }
-}
-
-function importEditorData() {
-  applyEditorData();
-}
-
-function resetEditorData() {
-  siteData = cloneData(defaultSiteData);
-  dataEditor.value = JSON.stringify(siteData, null, 2);
-  developerStatus.textContent = "已重置为默认数据。";
-  showSpeech("房间恢复到了最初的样子。");
 }
 
 function preloadImages() {
   [
-    "assets/layer-bg-night.png",
-    "assets/layer-bg-day.png",
-    ...warmaOutfits.map((outfit) => outfit.layer),
+    roomConfig.layers.bgNight,
+    roomConfig.layers.bgDay,
+    ...roomConfig.outfits.map((outfit) => outfit.layer),
     ...objectLayers.map((layer) => layer.getAttribute("src"))
   ].forEach((src) => {
+    if (!src) return;
     const image = new Image();
     image.src = src;
   });
@@ -447,7 +373,6 @@ room.addEventListener("mouseleave", () => setHoveredLayer(null));
 
 const enterButton = document.querySelector("[data-action='enter']");
 const randomButton = document.querySelector("[data-action='random-room']");
-const drawerButton = document.querySelector("[data-action='drawer']");
 
 enterButton?.addEventListener("click", () => {
   room.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -459,30 +384,20 @@ randomButton?.addEventListener("click", () => {
   openPanel(panels[Math.floor(Math.random() * panels.length)]);
 });
 
-drawerButton?.addEventListener("click", handleDrawerSecret);
 closeModalButton.addEventListener("click", closePanel);
-document.querySelector("#closeDeveloper").addEventListener("click", closeDeveloperPanel);
-document.querySelector("#applyData").addEventListener("click", applyEditorData);
-document.querySelector("#exportData").addEventListener("click", exportEditorData);
-document.querySelector("#importData").addEventListener("click", importEditorData);
-document.querySelector("#resetData").addEventListener("click", resetEditorData);
 
 modal.addEventListener("click", (event) => {
   if (event.target === modal) closePanel();
 });
 
-developerPanel.addEventListener("click", (event) => {
-  if (event.target === developerPanel) closeDeveloperPanel();
-});
-
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   closePanel();
-  closeDeveloperPanel();
 });
 
 window.addEventListener("load", () => {
+  applyConfigToPage();
   preloadImages();
   room.classList.add("is-ready");
-  window.setTimeout(() => showSpeech(defaultSiteData.warmaQuotes[0]), 600);
+  window.setTimeout(() => showSpeech(roomConfig.warmaQuotes[0] || defaultRoomConfig.warmaQuotes[0]), 600);
 });
