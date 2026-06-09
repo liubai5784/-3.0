@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>留白的小房间</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="hotspots.css">
+  <link rel="stylesheet" href="layers.css">
 </head>
 <body>
   <main class="page-shell">
@@ -21,92 +21,20 @@
     </section>
 
     <section class="room-wrap" aria-label="留白的小房间互动首页">
-      <div class="room" id="room">
-        <div class="wall-glow" aria-hidden="true"></div>
+      <div class="layer-room" id="room" aria-label="可互动的小房间">
+        <img class="room-layer bg-layer bg-night" id="bgNight" src="assets/layer-bg-night.png" alt="">
+        <img class="room-layer bg-layer bg-day" id="bgDay" src="assets/layer-bg-day.png" alt="">
+        <img class="room-layer object-layer" data-layer="photos" src="assets/layer-photos.png" alt="照片墙">
+        <img class="room-layer object-layer" data-layer="notes" src="assets/layer-notes.png" alt="便利贴">
+        <img class="room-layer object-layer" data-layer="desk" src="assets/layer-desk-items.png" alt="书桌小物件">
+        <img class="room-layer object-layer" data-layer="computer" src="assets/layer-computer.png" alt="电脑">
+        <img class="room-layer object-layer" data-layer="drawer" src="assets/layer-drawer.png" alt="抽屉">
+        <img class="room-layer object-layer" data-layer="lamp" src="assets/layer-lamp.png" alt="台灯">
+        <img class="room-layer object-layer" id="warmaLayer" data-layer="warma" src="assets/layer-warma-normal.png" alt="Warma">
+        <canvas id="hitCanvas" class="hit-canvas" aria-hidden="true"></canvas>
         <div class="room-fade-layer" id="roomFadeLayer" aria-hidden="true"></div>
-
-        <button class="room-item window" data-panel="window" aria-label="窗户：今日心情和今日天空">
-          <span class="night-sky">
-            <span class="moon"></span>
-            <span class="star star-a"></span>
-            <span class="star star-b"></span>
-            <span class="star star-c"></span>
-            <span class="cloud cloud-a"></span>
-            <span class="cloud cloud-b"></span>
-          </span>
-          <span class="window-frame"></span>
-          <span class="item-label">今日天空</span>
-        </button>
-
-        <button class="room-item photo-wall" data-panel="photos" aria-label="墙上照片：图片作品和照片收藏">
-          <span class="photo-card photo-one"></span>
-          <span class="photo-card photo-two"></span>
-          <span class="photo-card photo-three"></span>
-          <span class="item-label">照片墙</span>
-        </button>
-
-        <button class="room-item sticky-notes" data-panel="notes" aria-label="便利贴：灵感记录">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span class="item-label">灵感便利贴</span>
-        </button>
-
-        <button class="room-item wardrobe" data-panel="wardrobe" aria-label="衣柜：Warma 换装图鉴">
-          <span class="wardrobe-door left-door"></span>
-          <span class="wardrobe-door right-door"></span>
-          <span class="handle handle-left"></span>
-          <span class="handle handle-right"></span>
-          <span class="item-label">换装图鉴</span>
-        </button>
-
-        <button class="room-item bed" data-panel="bed" aria-label="小床：碎碎念和日常短句">
-          <span class="pillow"></span>
-          <span class="blanket"></span>
-          <span class="bed-leg leg-left"></span>
-          <span class="bed-leg leg-right"></span>
-          <span class="item-label">碎碎念</span>
-        </button>
-
-        <button class="room-item desk" data-panel="desk" aria-label="书桌：网页项目和小工具">
-          <span class="desk-top"></span>
-          <span class="desk-leg left"></span>
-          <span class="desk-leg right"></span>
-          <span class="item-label">项目书桌</span>
-        </button>
-
-        <button class="room-item computer" data-panel="computer" aria-label="电脑：作品展示">
-          <span class="monitor">
-            <span class="screen-line"></span>
-            <span class="screen-dot"></span>
-          </span>
-          <span class="monitor-stand"></span>
-          <span class="keyboard"></span>
-          <span class="item-label">作品电脑</span>
-        </button>
-
-        <button class="room-item drawer" data-panel="drawer" aria-label="抽屉：隐藏彩蛋">
-          <span class="drawer-box"></span>
-          <span class="drawer-knob"></span>
-          <span class="item-label">秘密抽屉</span>
-        </button>
-
-        <button class="room-item lamp" id="lampToggle" aria-label="左边桌子上的台灯：切换星空和日出">
-          <span class="lamp-shade"></span>
-          <span class="lamp-light"></span>
-          <span class="lamp-stem"></span>
-          <span class="lamp-base"></span>
-          <span class="item-label">台灯</span>
-        </button>
-
-        <button class="room-item warma" id="warma" aria-label="Warma 小助手：点击换装并随机说一句话">
-          <img src="assets/warma-integrated.png" alt="" class="warma-art">
-          <span class="item-label">Warma</span>
-        </button>
-
-        <div class="speech-bubble" id="speechBubble" aria-live="polite">
-          欢迎来到留白的小房间。
-        </div>
+        <div class="hit-label" id="hitLabel" aria-hidden="true"></div>
+        <div class="speech-bubble" id="speechBubble" aria-live="polite">欢迎来到留白的小房间。</div>
       </div>
     </section>
   </main>
