@@ -1,0 +1,200 @@
+/* Better interaction boundaries: use soft rectangular/rounded hotspots instead of polygon clips. */
+.room-item,
+#warma.warma {
+  clip-path: none !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.room-item::after,
+#warma.warma::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 218, 148, 0);
+  box-shadow: inset 0 0 0 0 rgba(255, 232, 184, 0);
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+
+.room-item:hover::after,
+.room-item:focus-visible::after,
+#warma.warma:hover::after,
+#warma.warma:focus-visible::after {
+  background: radial-gradient(ellipse at center, rgba(255, 216, 142, 0.16), rgba(255, 216, 142, 0.045) 58%, transparent 76%);
+  box-shadow: inset 0 0 0 1px rgba(255, 232, 184, 0.28);
+}
+
+.room-item:active::after,
+#warma.warma:active::after {
+  transform: scale(0.985);
+  background: radial-gradient(ellipse at center, rgba(255, 216, 142, 0.23), rgba(255, 216, 142, 0.06) 60%, transparent 78%);
+}
+
+/* Desktop / landscape precise hotspots */
+.window {
+  left: 20% !important;
+  top: 5% !important;
+  width: 58% !important;
+  height: 45% !important;
+  border-radius: 12px !important;
+}
+
+.photo-wall {
+  left: 2.2% !important;
+  top: 19% !important;
+  width: 13% !important;
+  height: 23% !important;
+}
+
+.sticky-notes {
+  left: 7% !important;
+  top: 30% !important;
+  width: 9.5% !important;
+  height: 16% !important;
+}
+
+.desk {
+  left: 1% !important;
+  bottom: 24% !important;
+  width: 28% !important;
+  height: 23% !important;
+  border-radius: 18px !important;
+}
+
+.computer {
+  left: 2% !important;
+  bottom: 36.5% !important;
+  width: 12.5% !important;
+  height: 17% !important;
+  border-radius: 12px !important;
+}
+
+/* Day/night switch is now the lamp on the left desk. */
+.lamp {
+  left: 13.2% !important;
+  bottom: 37.2% !important;
+  width: 8.6% !important;
+  height: 16.5% !important;
+  border-radius: 999px 999px 16px 16px !important;
+}
+
+.lamp .item-label::after {
+  content: " · 切换昼夜";
+}
+
+.bed {
+  left: 1% !important;
+  bottom: 0 !important;
+  width: 67% !important;
+  height: 28% !important;
+  border-radius: 22px !important;
+}
+
+.drawer {
+  right: 2.8% !important;
+  left: auto !important;
+  bottom: 9% !important;
+  width: 15% !important;
+  height: 34% !important;
+  border-radius: 14px !important;
+}
+
+#warma.warma {
+  left: 57% !important;
+  bottom: 25% !important;
+  width: 18% !important;
+  height: 30% !important;
+  border-radius: 22px !important;
+}
+
+/* The wardrobe is hidden in the current baked-background version, so do not leave a dead clickable block. */
+.wardrobe {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+@media (orientation: portrait) {
+  .window {
+    left: 12% !important;
+    top: 4% !important;
+    width: 74% !important;
+    height: 41% !important;
+  }
+
+  .photo-wall {
+    left: 4% !important;
+    top: 20% !important;
+    width: 18% !important;
+    height: 16% !important;
+  }
+
+  .sticky-notes {
+    left: 6% !important;
+    top: 33% !important;
+    width: 17% !important;
+    height: 13% !important;
+  }
+
+  .desk {
+    left: 2% !important;
+    bottom: 30% !important;
+    width: 36% !important;
+    height: 18% !important;
+  }
+
+  .computer {
+    left: 3% !important;
+    bottom: 40.5% !important;
+    width: 23% !important;
+    height: 12.5% !important;
+  }
+
+  .lamp {
+    left: 12% !important;
+    bottom: 37.5% !important;
+    width: 16% !important;
+    height: 13.5% !important;
+  }
+
+  .bed {
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 74% !important;
+    height: 27% !important;
+  }
+
+  .drawer {
+    right: 1% !important;
+    bottom: 8% !important;
+    width: 24% !important;
+    height: 30% !important;
+  }
+
+  #warma.warma {
+    left: 55% !important;
+    bottom: 28% !important;
+    width: 29% !important;
+    height: 27% !important;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .lamp {
+    left: 10% !important;
+    bottom: 37% !important;
+    width: 18% !important;
+    height: 14% !important;
+  }
+
+  #warma.warma {
+    left: 54% !important;
+    bottom: 28% !important;
+    width: 30% !important;
+    height: 27% !important;
+  }
+}
