@@ -1,0 +1,2596 @@
+:root {
+  --bg-top: #101d3b;
+  --bg-bottom: #2d3154;
+  --wall: #fff7ea;
+  --wall-shadow: #f6dfc6;
+  --floor: #d9ae7d;
+  --floor-line: #c28f60;
+  --wood: #d49b63;
+  --wood-dark: #a87044;
+  --cream: #fffaf0;
+  --cream-deep: #ffe9c6;
+  --pink: #ffd9df;
+  --pink-deep: #ee9bac;
+  --blue: #1b3564;
+  --ink: #4c4055;
+  --muted: #8b7683;
+  --light: #ffd67e;
+  --shadow: rgba(62, 42, 72, 0.24);
+  --panel: rgba(255, 250, 239, 0.94);
+  --focus: #ffba66;
+  font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 213, 126, 0.18), transparent 34%),
+    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+  overflow-x: hidden;
+  transition: background 600ms ease, color 400ms ease;
+}
+
+body.day-mode {
+  --bg-top: #9fd7ff;
+  --bg-bottom: #ffe7bc;
+  --wall: #fff9ed;
+  --wall-shadow: #f4dbc0;
+  --blue: #83c9ff;
+  --light: #ffe2a3;
+  --panel: rgba(255, 252, 244, 0.96);
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.page-shell {
+  width: min(1180px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 34px 0 46px;
+}
+
+.intro {
+  text-align: center;
+  color: #fff8ea;
+  margin-bottom: 24px;
+  text-shadow: 0 6px 26px rgba(0, 0, 0, 0.22);
+}
+
+.eyebrow,
+.modal-kicker {
+  margin: 0 0 8px;
+  color: #ffd99b;
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 6vw, 5.6rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.subtitle {
+  width: min(660px, 100%);
+  margin: 16px auto 0;
+  font-size: clamp(1rem, 2.4vw, 1.24rem);
+  line-height: 1.7;
+}
+
+.hero-actions,
+.developer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.soft-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #5f3e43;
+  background: linear-gradient(180deg, #fff4d4, #ffc978);
+  box-shadow: 0 12px 26px rgba(91, 57, 54, 0.2);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.soft-button.secondary {
+  background: linear-gradient(180deg, #fff8f4, #ffd8de);
+}
+
+.soft-button.ghost {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff7ed;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.soft-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(91, 57, 54, 0.26);
+}
+
+.room-wrap {
+  position: relative;
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+}
+
+.room {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  min-height: 520px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, var(--wall) 0 70%, transparent 70%),
+    repeating-linear-gradient(90deg, var(--floor) 0 84px, var(--floor-line) 84px 87px);
+  box-shadow: inset 0 -88px 0 rgba(154, 93, 52, 0.12);
+}
+
+.room::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28%;
+  height: 5px;
+  background: var(--wall-shadow);
+}
+
+.wall-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 68% 48%, rgba(255, 214, 126, 0.45), transparent 25%);
+  animation: glow 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.room-item {
+  position: absolute;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.room-item:hover {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 12px 14px rgba(90, 54, 70, 0.18));
+}
+
+.room-item:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.item-label {
+  position: absolute;
+  left: 50%;
+  bottom: -28px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #6e4e58;
+  background: rgba(255, 250, 239, 0.84);
+  font-size: 0.76rem;
+  box-shadow: 0 8px 16px rgba(85, 62, 70, 0.12);
+  opacity: 0;
+  transition: opacity 160ms ease, bottom 160ms ease;
+  pointer-events: none;
+}
+
+.room-item:hover .item-label,
+.room-item:focus-visible .item-label {
+  bottom: -34px;
+  opacity: 1;
+}
+
+.window {
+  left: 7%;
+  top: 10%;
+  width: 25%;
+  height: 31%;
+  border: 10px solid #f9e3c4;
+  border-radius: 8px;
+  background: var(--blue);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.25), 0 14px 28px var(--shadow);
+  overflow: hidden;
+}
+
+.night-sky,
+.window-frame {
+  position: absolute;
+  inset: 0;
+}
+
+.window-frame::before,
+.window-frame::after {
+  content: "";
+  position: absolute;
+  background: #f9e3c4;
+}
+
+.window-frame::before {
+  left: 50%;
+  top: 0;
+  width: 7px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.window-frame::after {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 7px;
+  transform: translateY(-50%);
+}
+
+.moon {
+  position: absolute;
+  right: 17%;
+  top: 14%;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffe89f;
+  box-shadow: 0 0 28px rgba(255, 232, 159, 0.8);
+}
+
+.star {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff4bf;
+  animation: twinkle 2.8s ease-in-out infinite;
+}
+
+.star-a { left: 16%; top: 18%; }
+.star-b { left: 38%; top: 31%; animation-delay: 800ms; }
+.star-c { right: 23%; bottom: 22%; animation-delay: 1400ms; }
+
+.cloud {
+  position: absolute;
+  width: 76px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  animation: drift 12s linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.cloud::before {
+  left: 12px;
+  top: -12px;
+  width: 28px;
+  height: 28px;
+}
+
+.cloud::after {
+  right: 14px;
+  top: -8px;
+  width: 24px;
+  height: 24px;
+}
+
+.cloud-a { left: -30%; bottom: 24%; }
+.cloud-b { left: 28%; top: 20%; transform: scale(0.75); animation-delay: -5s; }
+
+.photo-wall {
+  left: 39%;
+  top: 9%;
+  width: 18%;
+  height: 22%;
+}
+
+.photo-card {
+  position: absolute;
+  width: 56px;
+  height: 68px;
+  border: 6px solid #fff8ed;
+  border-bottom-width: 14px;
+  background: linear-gradient(145deg, #ffdce5, #9ec9ff);
+  box-shadow: 0 10px 18px rgba(80, 52, 76, 0.14);
+}
+
+.photo-one { left: 8%; top: 8%; transform: rotate(-8deg); }
+.photo-two { left: 38%; top: 23%; background: linear-gradient(145deg, #fff1a8, #ffbfd0); }
+.photo-three { right: 6%; top: 3%; transform: rotate(7deg); background: linear-gradient(145deg, #b4e8d7, #ffe3a8); }
+
+.sticky-notes {
+  left: 60%;
+  top: 13%;
+  width: 14%;
+  height: 18%;
+}
+
+.sticky-notes span:not(.item-label) {
+  position: absolute;
+  width: 54px;
+  height: 48px;
+  border-radius: 6px 6px 12px 6px;
+  box-shadow: 0 8px 14px rgba(86, 60, 70, 0.12);
+}
+
+.sticky-notes span:nth-child(1) {
+  left: 0;
+  top: 0;
+  background: #fff1a8;
+  transform: rotate(-4deg);
+}
+
+.sticky-notes span:nth-child(2) {
+  left: 48px;
+  top: 20px;
+  background: #ffdce5;
+  transform: rotate(5deg);
+}
+
+.sticky-notes span:nth-child(3) {
+  left: 25px;
+  top: 58px;
+  background: #d8f3e9;
+  transform: rotate(-2deg);
+}
+
+.wardrobe {
+  right: 6%;
+  bottom: 24%;
+  width: 18%;
+  height: 43%;
+  border-radius: 8px 8px 5px 5px;
+  background: #e2ad78;
+  box-shadow: inset 0 -12px 0 rgba(130, 75, 45, 0.14), 0 18px 32px var(--shadow);
+}
+
+.wardrobe-door {
+  position: absolute;
+  top: 7%;
+  width: 46%;
+  height: 86%;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #eec18d, #c88654);
+  border: 3px solid rgba(122, 73, 48, 0.16);
+}
+
+.left-door { left: 4%; }
+.right-door { right: 4%; }
+
+.handle {
+  position: absolute;
+  top: 48%;
+  width: 9px;
+  height: 28px;
+  border-radius: 999px;
+  background: #fff3cf;
+}
+
+.handle-left { left: 45%; }
+.handle-right { right: 45%; }
+
+.bed {
+  left: 8%;
+  bottom: 13%;
+  width: 33%;
+  height: 23%;
+  border-radius: 18px 26px 8px 8px;
+  background: #dfac76;
+  box-shadow: 0 18px 32px var(--shadow);
+}
+
+.pillow {
+  position: absolute;
+  left: 8%;
+  top: 15%;
+  width: 24%;
+  height: 32%;
+  border-radius: 16px;
+  background: #fff7ed;
+}
+
+.blanket {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 73%;
+  height: 72%;
+  border-radius: 34px 20px 8px 8px;
+  background:
+    radial-gradient(circle at 20% 36%, rgba(255, 255, 255, 0.28), transparent 18%),
+    linear-gradient(135deg, #ffd8df, #ee9bac);
+}
+
+.bed-leg {
+  position: absolute;
+  bottom: -18px;
+  width: 16px;
+  height: 22px;
+  border-radius: 0 0 6px 6px;
+  background: var(--wood-dark);
+}
+
+.leg-left { left: 10%; }
+.leg-right { right: 10%; }
+
+.desk {
+  left: 44%;
+  bottom: 18%;
+  width: 25%;
+  height: 19%;
+}
+
+.desk-top {
+  position: absolute;
+  left: 0;
+  top: 10%;
+  width: 100%;
+  height: 28%;
+  border-radius: 8px;
+  background: var(--wood);
+  box-shadow: 0 14px 20px var(--shadow);
+}
+
+.desk-leg {
+  position: absolute;
+  top: 34%;
+  width: 13%;
+  height: 62%;
+  border-radius: 0 0 8px 8px;
+  background: var(--wood-dark);
+}
+
+.desk-leg.left { left: 10%; }
+.desk-leg.right { right: 10%; }
+
+.computer {
+  left: 50%;
+  bottom: 32%;
+  width: 13%;
+  height: 18%;
+}
+
+.monitor {
+  position: absolute;
+  left: 6%;
+  top: 0;
+  width: 88%;
+  height: 62%;
+  border: 8px solid #f4efe9;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #29365e, #6679aa);
+  box-shadow: inset 0 0 18px rgba(255, 220, 163, 0.25), 0 10px 18px var(--shadow);
+}
+
+.screen-line {
+  position: absolute;
+  left: 16%;
+  top: 30%;
+  width: 44%;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffd99b;
+}
+
+.screen-dot {
+  position: absolute;
+  right: 18%;
+  bottom: 24%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #bdf2df;
+}
+
+.monitor-stand {
+  position: absolute;
+  left: 43%;
+  top: 60%;
+  width: 14%;
+  height: 18%;
+  background: #f4efe9;
+}
+
+.keyboard {
+  position: absolute;
+  left: 20%;
+  bottom: 10%;
+  width: 60%;
+  height: 13%;
+  border-radius: 999px;
+  background: #fff7ed;
+}
+
+.drawer {
+  left: 69%;
+  bottom: 17%;
+  width: 11%;
+  height: 17%;
+}
+
+.drawer-box {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #eec18d, #bd7c4d);
+  box-shadow: 0 16px 26px var(--shadow);
+}
+
+.drawer-knob {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff1bd;
+  transform: translate(-50%, -50%);
+}
+
+.lamp {
+  left: 70%;
+  bottom: 32%;
+  width: 9%;
+  height: 22%;
+}
+
+.lamp-light {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  width: 150px;
+  height: 150px;
+  transform: translate(-50%, -20%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 126, 0.5), transparent 68%);
+  animation: glow 3.4s ease-in-out infinite;
+}
+
+.lamp-shade {
+  position: absolute;
+  left: 22%;
+  top: 8%;
+  z-index: 1;
+  width: 56%;
+  height: 30%;
+  border-radius: 42% 42% 14px 14px;
+  background: #ffd36e;
+}
+
+.lamp-stem {
+  position: absolute;
+  left: 47%;
+  top: 36%;
+  width: 8%;
+  height: 42%;
+  background: #9f7048;
+}
+
+.lamp-base {
+  position: absolute;
+  left: 22%;
+  bottom: 8%;
+  width: 58%;
+  height: 12%;
+  border-radius: 999px;
+  background: #9f7048;
+}
+
+.warma {
+  left: 41%;
+  bottom: 20%;
+  width: 10%;
+  height: 29%;
+  animation: floaty 3s ease-in-out infinite;
+}
+
+.warma-hair {
+  position: absolute;
+  left: 19%;
+  top: 1%;
+  width: 62%;
+  height: 34%;
+  border-radius: 48% 48% 42% 42%;
+  background: #f4c37e;
+  box-shadow: -12px 12px 0 #e79b68, 12px 12px 0 #e79b68;
+}
+
+.warma-face {
+  position: absolute;
+  left: 24%;
+  top: 12%;
+  width: 52%;
+  height: 28%;
+  border-radius: 44% 44% 48% 48%;
+  background: #fff0df;
+}
+
+.eye {
+  position: absolute;
+  top: 40%;
+  width: 7px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5c4050;
+}
+
+.left-eye { left: 27%; }
+.right-eye { right: 27%; }
+
+.mouth {
+  position: absolute;
+  left: 45%;
+  bottom: 22%;
+  width: 12px;
+  height: 6px;
+  border-bottom: 2px solid #d98791;
+  border-radius: 50%;
+}
+
+.warma-body {
+  position: absolute;
+  left: 30%;
+  top: 39%;
+  width: 40%;
+  height: 34%;
+  border-radius: 18px 18px 8px 8px;
+  background: linear-gradient(180deg, #fff7ed, #ffd2dc);
+}
+
+.warma-skirt {
+  position: absolute;
+  left: 22%;
+  top: 66%;
+  width: 56%;
+  height: 18%;
+  border-radius: 12px 12px 18px 18px;
+  background: #ee9bac;
+}
+
+.warma-arm {
+  position: absolute;
+  top: 45%;
+  width: 11%;
+  height: 28%;
+  border-radius: 999px;
+  background: #fff0df;
+}
+
+.arm-left { left: 18%; transform: rotate(20deg); }
+.arm-right { right: 18%; transform: rotate(-22deg); }
+
+.speech-bubble {
+  position: absolute;
+  left: 48%;
+  bottom: 53%;
+  max-width: 260px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  color: #66505a;
+  background: rgba(255, 250, 239, 0.92);
+  box-shadow: 0 14px 28px rgba(73, 48, 70, 0.16);
+  transform: translateY(8px);
+  opacity: 0;
+  transition: opacity 220ms ease, transform 220ms ease;
+  pointer-events: none;
+}
+
+.speech-bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal,
+.developer-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(23, 24, 45, 0.52);
+  backdrop-filter: blur(6px);
+}
+
+.modal.is-open,
+.developer-panel.is-open {
+  display: flex;
+  animation: fadeIn 180ms ease;
+}
+
+.modal-card,
+.developer-card {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 26px;
+  background: var(--panel);
+  box-shadow: 0 28px 80px rgba(32, 22, 42, 0.34);
+}
+
+.modal-card h2,
+.developer-card h2 {
+  margin: 0 36px 14px 0;
+  font-size: 1.7rem;
+}
+
+.icon-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  color: #744e55;
+  background: #fff0dc;
+  cursor: pointer;
+}
+
+.close-modal {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+}
+
+.modal-content {
+  display: grid;
+  gap: 12px;
+}
+
+.content-block {
+  border-left: 4px solid #ffc978;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.content-block h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.content-block p,
+.content-block ul {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.content-block ul {
+  padding-left: 1.2em;
+}
+
+.developer-card {
+  width: min(780px, 100%);
+}
+
+.developer-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.developer-help,
+.developer-status {
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.developer-status {
+  min-height: 24px;
+  color: #9a6270;
+}
+
+#dataEditor {
+  width: 100%;
+  min-height: 320px;
+  resize: vertical;
+  border: 1px solid #ead6c0;
+  border-radius: 8px;
+  padding: 14px;
+  color: #463944;
+  background: #fffdf8;
+  font: 0.9rem/1.55 Consolas, "Courier New", monospace;
+}
+
+.developer-actions {
+  justify-content: flex-start;
+}
+
+body.day-mode .moon {
+  background: #fff3c5;
+  box-shadow: 0 0 12px rgba(255, 227, 145, 0.4);
+}
+
+body.day-mode .night-sky {
+  background: linear-gradient(180deg, #7ec9ff, #cdefff);
+}
+
+body.day-mode .star {
+  opacity: 0;
+}
+
+@keyframes drift {
+  from { transform: translateX(-50px); }
+  to { transform: translateX(240px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .page-shell {
+    width: min(100% - 16px, 620px);
+    padding-top: 22px;
+  }
+
+  .room-wrap {
+    padding: 8px;
+  }
+
+  .room {
+    aspect-ratio: 10 / 16;
+    min-height: 700px;
+  }
+
+  .window {
+    left: 7%;
+    top: 7%;
+    width: 42%;
+    height: 20%;
+  }
+
+  .photo-wall {
+    left: 56%;
+    top: 7%;
+    width: 34%;
+    height: 16%;
+  }
+
+  .sticky-notes {
+    left: 55%;
+    top: 26%;
+    width: 34%;
+    height: 14%;
+  }
+
+  .wardrobe {
+    right: 7%;
+    bottom: 30%;
+    width: 31%;
+    height: 29%;
+  }
+
+  .bed {
+    left: 7%;
+    bottom: 13%;
+    width: 52%;
+    height: 15%;
+  }
+
+  .desk {
+    left: 12%;
+    bottom: 34%;
+    width: 42%;
+    height: 15%;
+  }
+
+  .computer {
+    left: 22%;
+    bottom: 45%;
+    width: 24%;
+    height: 12%;
+  }
+
+  .drawer {
+    left: 63%;
+    bottom: 16%;
+    width: 21%;
+    height: 12%;
+  }
+
+  .lamp {
+    left: 68%;
+    bottom: 47%;
+    width: 17%;
+    height: 16%;
+  }
+
+  .warma {
+    left: 47%;
+    bottom: 32%;
+    width: 20%;
+    height: 19%;
+  }
+
+  .speech-bubble {
+    left: 16%;
+    right: 16%;
+    bottom: 58%;
+    max-width: none;
+  }
+
+  .photo-card {
+    width: 45px;
+    height: 56px;
+  }
+
+  .sticky-notes span:not(.item-label) {
+    width: 46px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-actions,
+  .developer-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .soft-button {
+    width: 100%;
+  }
+
+  .intro {
+    margin-bottom: 16px;
+  }
+
+  .modal-card,
+  .developer-card {
+    padding: 20px;
+  }
+}
+
+/* More grounded v2 look: warm 3D room and Warma character details. */
+.room-wrap {
+  perspective: 1200px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 217, 166, 0.08)),
+    rgba(255, 255, 255, 0.1);
+}
+
+.room {
+  transform-style: preserve-3d;
+  background:
+    radial-gradient(ellipse at 68% 48%, rgba(255, 216, 139, 0.38), transparent 27%),
+    linear-gradient(90deg, rgba(237, 216, 197, 0.9) 0 1px, transparent 1px 73%, rgba(211, 188, 169, 0.7) 73% 73.4%, transparent 73.4%),
+    linear-gradient(180deg, #fff8ec 0 68%, transparent 68%),
+    linear-gradient(160deg, #e7bc84 0 55%, #c9915f 55% 100%);
+  box-shadow:
+    inset 0 16px 38px rgba(255, 255, 255, 0.58),
+    inset 0 -140px 90px rgba(108, 64, 45, 0.18),
+    0 34px 110px rgba(0, 0, 0, 0.32);
+}
+
+.room::before {
+  bottom: 31.5%;
+  height: 8px;
+  background: linear-gradient(90deg, #d8b896, #f7dfc3, #cba47c);
+  box-shadow: 0 12px 26px rgba(132, 91, 64, 0.2);
+  z-index: 1;
+}
+
+.room::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -16%;
+  height: 47%;
+  background:
+    repeating-linear-gradient(104deg, rgba(255, 255, 255, 0.16) 0 2px, transparent 2px 76px),
+    linear-gradient(180deg, rgba(255, 226, 184, 0.44), rgba(120, 72, 43, 0.22));
+  transform: rotateX(58deg);
+  transform-origin: bottom center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wall-glow {
+  background:
+    radial-gradient(ellipse at 73% 58%, rgba(255, 209, 118, 0.5), transparent 24%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 35%, rgba(130, 92, 80, 0.08));
+}
+
+.room-item {
+  z-index: 2;
+  filter: drop-shadow(0 16px 18px rgba(55, 39, 48, 0.16));
+}
+
+.window {
+  border-width: 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 34%),
+    var(--blue);
+  box-shadow:
+    inset 8px 8px 18px rgba(255, 255, 255, 0.15),
+    inset -9px -9px 20px rgba(10, 20, 44, 0.34),
+    0 24px 34px rgba(53, 38, 55, 0.24);
+  transform: rotateY(-5deg);
+}
+
+.photo-card {
+  border-radius: 5px;
+  box-shadow:
+    0 12px 18px rgba(67, 46, 62, 0.16),
+    inset 0 0 18px rgba(255, 255, 255, 0.22);
+}
+
+.wardrobe {
+  background: linear-gradient(115deg, #f0c38e, #c98d5b 62%, #a66d45);
+  box-shadow:
+    inset 13px 0 22px rgba(255, 239, 211, 0.32),
+    inset -18px 0 30px rgba(106, 59, 37, 0.26),
+    0 24px 38px rgba(69, 43, 47, 0.25);
+  transform: rotateY(-8deg);
+}
+
+.wardrobe-door {
+  background:
+    linear-gradient(90deg, rgba(255, 242, 218, 0.34), transparent 28%),
+    linear-gradient(180deg, #edbd85, #bd7b4b);
+}
+
+.bed {
+  background:
+    linear-gradient(180deg, rgba(255, 238, 216, 0.45), transparent 35%),
+    linear-gradient(120deg, #e7b47a, #b9774c);
+  box-shadow:
+    inset 0 12px 22px rgba(255, 237, 211, 0.22),
+    inset -16px -12px 24px rgba(104, 59, 42, 0.22),
+    0 26px 38px rgba(69, 43, 47, 0.24);
+  transform: rotateX(2deg) rotateY(4deg);
+}
+
+.blanket {
+  background:
+    radial-gradient(circle at 24% 30%, rgba(255, 255, 255, 0.36), transparent 17%),
+    linear-gradient(135deg, #ffe2e8 0 20%, #f3aab8 52%, #d77d94 100%);
+  box-shadow: inset -18px -14px 26px rgba(142, 64, 86, 0.18);
+}
+
+.pillow {
+  box-shadow: inset -8px -6px 18px rgba(213, 167, 151, 0.18), 0 8px 16px rgba(85, 55, 58, 0.12);
+}
+
+.desk-top {
+  height: 34%;
+  background:
+    linear-gradient(90deg, rgba(255, 235, 196, 0.32), transparent 34%),
+    linear-gradient(180deg, #e0a166, #a96d42);
+  box-shadow:
+    inset 0 9px 12px rgba(255, 235, 198, 0.28),
+    0 18px 26px rgba(71, 46, 48, 0.23);
+  transform: skewX(-4deg);
+}
+
+.desk-leg {
+  top: 38%;
+  background: linear-gradient(90deg, #b47a4c, #7f4d32);
+}
+
+.monitor {
+  background:
+    radial-gradient(circle at 72% 30%, rgba(255, 221, 150, 0.28), transparent 18%),
+    linear-gradient(145deg, #1d2748, #4e628d);
+  box-shadow:
+    inset 0 0 22px rgba(255, 219, 155, 0.22),
+    inset -10px -8px 18px rgba(5, 13, 30, 0.28),
+    0 12px 20px rgba(64, 42, 54, 0.22);
+}
+
+.drawer-box {
+  background:
+    linear-gradient(90deg, rgba(255, 229, 192, 0.3), transparent 35%),
+    linear-gradient(180deg, #e6af78, #a86a43);
+  box-shadow:
+    inset -14px -10px 18px rgba(94, 51, 35, 0.24),
+    0 20px 30px rgba(64, 42, 54, 0.2);
+}
+
+.lamp-shade {
+  background: linear-gradient(120deg, #ffe39b, #d8943b);
+  box-shadow:
+    inset 8px 5px 10px rgba(255, 250, 208, 0.4),
+    inset -8px -8px 14px rgba(119, 71, 37, 0.22);
+}
+
+.lamp-light {
+  width: 210px;
+  height: 190px;
+  background: radial-gradient(circle, rgba(255, 220, 132, 0.58), rgba(255, 199, 93, 0.2) 44%, transparent 70%);
+}
+
+.warma {
+  left: 39%;
+  bottom: 18%;
+  width: 15%;
+  height: 41%;
+  min-width: 128px;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 24px 24px rgba(59, 38, 48, 0.22));
+}
+
+.warma:hover {
+  filter: drop-shadow(0 28px 26px rgba(59, 38, 48, 0.28));
+}
+
+.warma-shadow {
+  position: absolute;
+  left: 18%;
+  bottom: -2%;
+  width: 64%;
+  height: 9%;
+  border-radius: 50%;
+  background: rgba(72, 45, 52, 0.22);
+  filter: blur(4px);
+}
+
+.warma-hair {
+  left: 21%;
+  top: 5%;
+  z-index: 5;
+  width: 58%;
+  height: 26%;
+  border-radius: 48% 48% 38% 38%;
+  background:
+    radial-gradient(circle at 32% 18%, rgba(255, 255, 255, 0.9), transparent 22%),
+    linear-gradient(145deg, #fffdfb 0 32%, #ffe7ee 68%, #f5c8d5 100%);
+  box-shadow:
+    inset 9px 8px 13px rgba(255, 255, 255, 0.76),
+    inset -12px -7px 16px rgba(230, 151, 174, 0.2),
+    0 5px 14px rgba(114, 72, 83, 0.12);
+}
+
+.warma-hair::before,
+.warma-hair::after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  width: 25%;
+  height: 58%;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #fffdfb, #f5c9d5);
+}
+
+.warma-hair::before { left: -8%; transform: rotate(10deg); }
+.warma-hair::after { right: -8%; transform: rotate(-10deg); }
+
+.ahoge {
+  position: absolute;
+  left: 48%;
+  top: -5%;
+  z-index: 8;
+  width: 36px;
+  height: 52px;
+  border-left: 8px solid #fff5f7;
+  border-radius: 80% 0 0 0;
+  transform: rotate(22deg);
+  filter: drop-shadow(3px 2px 0 rgba(232, 171, 188, 0.35));
+}
+
+.top-bow,
+.tail-bow {
+  position: absolute;
+  z-index: 10;
+  width: 45px;
+  height: 30px;
+}
+
+.top-bow {
+  left: 50%;
+  top: 1%;
+  transform: translateX(-50%) rotate(-2deg);
+}
+
+.top-bow::before,
+.top-bow::after,
+.tail-bow::before,
+.tail-bow::after,
+.chest-bow::before,
+.chest-bow::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  width: 22px;
+  height: 20px;
+  border-radius: 70% 30% 70% 30%;
+  background: linear-gradient(135deg, #ff5964, #bf1e2b);
+  box-shadow: inset 4px 3px 7px rgba(255, 202, 198, 0.35), inset -5px -5px 9px rgba(94, 0, 15, 0.22);
+}
+
+.top-bow::before,
+.tail-bow::before,
+.chest-bow::before {
+  left: 0;
+  transform: rotate(-18deg);
+}
+
+.top-bow::after,
+.tail-bow::after,
+.chest-bow::after {
+  right: 0;
+  transform: rotate(18deg) scaleX(-1);
+}
+
+.top-bow::after {
+  box-shadow:
+    inset 4px 3px 7px rgba(255, 202, 198, 0.35),
+    inset -5px -5px 9px rgba(94, 0, 15, 0.22),
+    -22px 7px 0 -8px #ffd358;
+}
+
+.bangs {
+  position: absolute;
+  left: 25%;
+  top: 15%;
+  z-index: 9;
+  width: 50%;
+  height: 13%;
+}
+
+.bangs span {
+  position: absolute;
+  top: 0;
+  width: 31%;
+  height: 100%;
+  border-radius: 10px 10px 70% 70%;
+  background: linear-gradient(180deg, #fff, #f6cdd8);
+}
+
+.bangs span:nth-child(1) { left: 5%; transform: rotate(12deg); }
+.bangs span:nth-child(2) { left: 35%; height: 112%; }
+.bangs span:nth-child(3) { right: 5%; transform: rotate(-12deg); }
+
+.hair-braid {
+  position: absolute;
+  top: 23%;
+  z-index: 3;
+  width: 23%;
+  height: 42%;
+}
+
+.braid-left { left: 4%; transform: rotate(8deg); }
+.braid-right { right: 4%; transform: rotate(-8deg); }
+
+.hair-braid span {
+  position: absolute;
+  left: 21%;
+  width: 58%;
+  height: 26%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.9), transparent 22%),
+    linear-gradient(145deg, #fffafa, #f6cbd8);
+  box-shadow: inset -5px -3px 9px rgba(224, 143, 167, 0.18), 0 4px 8px rgba(90, 54, 64, 0.08);
+}
+
+.hair-braid span:nth-child(1) { top: 0; }
+.hair-braid span:nth-child(2) { top: 23%; transform: translateX(7px); }
+.hair-braid span:nth-child(3) { top: 46%; transform: translateX(-3px); }
+
+.tail-bow {
+  z-index: 8;
+  width: 28px;
+  height: 20px;
+  top: 56%;
+}
+
+.tail-bow::before,
+.tail-bow::after {
+  width: 14px;
+  height: 13px;
+  top: 4px;
+}
+
+.tail-bow-left { left: 6%; transform: rotate(10deg); }
+.tail-bow-right { right: 6%; transform: rotate(-10deg); }
+
+.warma-face {
+  left: 28%;
+  top: 17%;
+  z-index: 7;
+  width: 44%;
+  height: 25%;
+  border-radius: 48% 48% 46% 46%;
+  background:
+    radial-gradient(circle at 30% 34%, rgba(255, 255, 255, 0.55), transparent 18%),
+    linear-gradient(180deg, #fff2e7, #ffd8cc);
+  box-shadow:
+    inset 8px 6px 12px rgba(255, 255, 255, 0.54),
+    inset -7px -5px 13px rgba(222, 126, 119, 0.13);
+}
+
+.eye {
+  top: 38%;
+  width: 14px;
+  height: 18px;
+  background:
+    radial-gradient(circle at 38% 24%, #fff 0 13%, transparent 14%),
+    radial-gradient(circle at 58% 66%, #ffcc79 0 16%, transparent 17%),
+    linear-gradient(180deg, #c32835, #ff7b3f 58%, #6e2431);
+  box-shadow: 0 0 0 1px rgba(97, 23, 38, 0.22);
+}
+
+.left-eye { left: 24%; }
+.right-eye { right: 24%; }
+
+.blush {
+  position: absolute;
+  top: 60%;
+  width: 15px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 132, 150, 0.34);
+  filter: blur(1px);
+}
+
+.blush-left { left: 12%; }
+.blush-right { right: 12%; }
+
+.mouth {
+  left: 45%;
+  bottom: 17%;
+  width: 13px;
+  height: 8px;
+  border-bottom: 2px solid #c76a77;
+}
+
+.warma-body {
+  left: 31%;
+  top: 44%;
+  z-index: 4;
+  width: 38%;
+  height: 28%;
+  border-radius: 22px 22px 16px 16px;
+  background:
+    radial-gradient(ellipse at 30% 24%, rgba(255, 255, 255, 0.95), transparent 28%),
+    linear-gradient(180deg, #fffdf8, #ffe8ee);
+  box-shadow:
+    inset 9px 8px 16px rgba(255, 255, 255, 0.66),
+    inset -8px -10px 18px rgba(224, 149, 166, 0.18),
+    0 8px 14px rgba(95, 55, 66, 0.1);
+}
+
+.scarf {
+  position: absolute;
+  left: 33%;
+  top: 40%;
+  z-index: 7;
+  width: 34%;
+  height: 8%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #db2231, #ff6872);
+  box-shadow: inset 3px 3px 6px rgba(255, 199, 195, 0.32);
+}
+
+.chest-bow {
+  position: absolute;
+  left: 39%;
+  top: 50%;
+  z-index: 8;
+  width: 32px;
+  height: 22px;
+}
+
+.chest-bow::before,
+.chest-bow::after {
+  width: 16px;
+  height: 14px;
+}
+
+.chest-bow::after {
+  box-shadow:
+    inset 4px 3px 7px rgba(255, 202, 198, 0.35),
+    inset -5px -5px 9px rgba(94, 0, 15, 0.22),
+    -15px 5px 0 -6px #ffd358;
+}
+
+.warma-skirt {
+  left: 25%;
+  top: 68%;
+  z-index: 3;
+  width: 50%;
+  height: 16%;
+  border-radius: 12px 12px 24px 24px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 6px, transparent 6px 15px),
+    linear-gradient(180deg, #ff8690, #d94c5c);
+  box-shadow: inset -8px -6px 13px rgba(113, 12, 35, 0.18);
+}
+
+.warma-arm {
+  z-index: 3;
+  top: 46%;
+  width: 14%;
+  height: 29%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fffdf8, #ffe7ed);
+  box-shadow: inset -5px -6px 9px rgba(220, 145, 162, 0.16);
+}
+
+.arm-left { left: 22%; transform: rotate(17deg); }
+.arm-right { right: 22%; transform: rotate(-19deg); }
+
+.warma::before,
+.warma::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 82%;
+  width: 9%;
+  height: 14%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff2e7, #f4c0b4);
+}
+
+.warma::before { left: 39%; }
+.warma::after { right: 39%; }
+
+body.day-mode .room {
+  background:
+    radial-gradient(ellipse at 60% 30%, rgba(255, 244, 201, 0.46), transparent 30%),
+    linear-gradient(90deg, rgba(237, 216, 197, 0.88) 0 1px, transparent 1px 73%, rgba(211, 188, 169, 0.55) 73% 73.4%, transparent 73.4%),
+    linear-gradient(180deg, #fffbed 0 68%, transparent 68%),
+    linear-gradient(160deg, #efc995 0 55%, #ce9b6a 55% 100%);
+}
+
+@media (max-width: 760px) {
+  .warma {
+    left: 40%;
+    bottom: 29%;
+    width: 27%;
+    height: 25%;
+    min-width: 118px;
+  }
+
+  .speech-bubble {
+    bottom: 59%;
+  }
+
+  .room::after {
+    bottom: -11%;
+  }
+}
+
+@media (max-width: 430px) {
+  .warma {
+    left: 38%;
+    width: 30%;
+    min-width: 108px;
+  }
+
+  .top-bow {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+/* AI image edition: the room and character are raster assets, not CSS-built shapes. */
+body {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 207, 122, 0.16), transparent 36%),
+    linear-gradient(180deg, #11121f, #201424 58%, #15111b);
+}
+
+body.day-mode {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 221, 150, 0.22), transparent 38%),
+    linear-gradient(180deg, #26324d, #2f2634 58%, #201823);
+}
+
+.room-wrap {
+  padding: 0;
+  border: 1px solid rgba(255, 232, 190, 0.22);
+  background: rgba(255, 239, 217, 0.08);
+  box-shadow:
+    0 38px 120px rgba(0, 0, 0, 0.46),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.room {
+  min-height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background-image:
+    linear-gradient(180deg, rgba(16, 13, 20, 0.05), rgba(16, 13, 20, 0.18)),
+    url("assets/room-rainy-window.png");
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 -90px 110px rgba(16, 10, 12, 0.22);
+}
+
+body.day-mode .room {
+  background-image:
+    linear-gradient(180deg, rgba(255, 225, 176, 0.12), rgba(23, 15, 21, 0.1)),
+    url("assets/room-rainy-window.png");
+  filter: saturate(1.06) brightness(1.08);
+}
+
+.room::before,
+.room::after,
+.wall-glow {
+  display: none;
+}
+
+.room-item {
+  z-index: 4;
+  border-radius: 8px;
+  background: rgba(255, 225, 172, 0);
+  filter: none;
+}
+
+.room-item > span:not(.item-label) {
+  display: none;
+}
+
+.room-item:hover,
+.room-item:focus-visible {
+  background:
+    radial-gradient(ellipse at center, rgba(255, 213, 132, 0.22), rgba(255, 213, 132, 0.02) 66%, transparent 72%);
+  box-shadow: inset 0 0 0 1px rgba(255, 233, 186, 0.35);
+  filter: none;
+  transform: none;
+}
+
+.room-item:active {
+  transform: scale(0.99);
+}
+
+.item-label {
+  z-index: 8;
+  bottom: 8px;
+  color: #fff6e8;
+  background: rgba(30, 19, 23, 0.62);
+  border: 1px solid rgba(255, 225, 175, 0.32);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.room-item:hover .item-label,
+.room-item:focus-visible .item-label {
+  bottom: 12px;
+}
+
+.window {
+  left: 19.5%;
+  top: 5%;
+  width: 61%;
+  height: 55%;
+  border: 0;
+  overflow: visible;
+  transform: none;
+}
+
+.photo-wall {
+  left: 1.5%;
+  top: 20%;
+  width: 13%;
+  height: 24%;
+}
+
+.sticky-notes {
+  left: 6.5%;
+  top: 29%;
+  width: 9%;
+  height: 18%;
+}
+
+.desk {
+  left: 1.5%;
+  bottom: 19%;
+  width: 22%;
+  height: 29%;
+}
+
+.computer {
+  left: 0.5%;
+  bottom: 33%;
+  width: 13%;
+  height: 21%;
+}
+
+.bed {
+  left: 4%;
+  bottom: 0;
+  width: 67%;
+  height: 31%;
+  transform: none;
+}
+
+.wardrobe {
+  right: 0;
+  top: 15%;
+  width: 15%;
+  height: 60%;
+  transform: none;
+}
+
+.drawer {
+  right: 1.8%;
+  bottom: 13%;
+  left: auto;
+  width: 13%;
+  height: 33%;
+}
+
+.lamp {
+  left: 29%;
+  bottom: 30%;
+  width: 15%;
+  height: 18%;
+}
+
+.warma {
+  z-index: 7;
+  left: 61.5%;
+  bottom: 0;
+  width: 18%;
+  height: 56%;
+  min-width: 0;
+  animation: floaty 3.8s ease-in-out infinite;
+  background: transparent;
+  filter: drop-shadow(0 22px 26px rgba(16, 8, 13, 0.36));
+}
+
+.warma::before,
+.warma::after {
+  display: none;
+}
+
+.warma:hover,
+.warma:focus-visible {
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 28px 30px rgba(16, 8, 13, 0.42));
+  transform: translateY(-5px);
+}
+
+.warma-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
+
+.speech-bubble {
+  z-index: 9;
+  left: 59%;
+  bottom: 57%;
+  color: #fff3e6;
+  background: rgba(26, 16, 21, 0.7);
+  border: 1px solid rgba(255, 226, 178, 0.3);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 760px) {
+  .room {
+    aspect-ratio: 9 / 14;
+    background-position: center;
+  }
+
+  .window {
+    left: 12%;
+    top: 6%;
+    width: 76%;
+    height: 38%;
+  }
+
+  .photo-wall {
+    left: 4%;
+    top: 20%;
+    width: 17%;
+    height: 17%;
+  }
+
+  .sticky-notes {
+    left: 6%;
+    top: 33%;
+    width: 16%;
+    height: 14%;
+  }
+
+  .desk {
+    left: 4%;
+    bottom: 27%;
+    width: 34%;
+    height: 20%;
+  }
+
+  .computer {
+    left: 3%;
+    bottom: 39%;
+    width: 24%;
+    height: 13%;
+  }
+
+  .bed {
+    left: 0;
+    bottom: 0;
+    width: 76%;
+    height: 28%;
+  }
+
+  .wardrobe {
+    right: 0;
+    top: 31%;
+    width: 24%;
+    height: 39%;
+  }
+
+  .drawer {
+    right: 1%;
+    bottom: 11%;
+    width: 22%;
+    height: 27%;
+  }
+
+  .lamp {
+    left: 33%;
+    bottom: 30%;
+    width: 22%;
+    height: 14%;
+  }
+
+  .warma {
+    left: 55%;
+    bottom: 1%;
+    width: 31%;
+    height: 42%;
+    min-width: 0;
+  }
+
+  .speech-bubble {
+    left: 18%;
+    right: 8%;
+    bottom: 47%;
+  }
+}
+
+@media (max-width: 430px) {
+  .warma {
+    left: 54%;
+    width: 34%;
+  }
+}
+
+/* Interaction/layout refinement: same room, only sky and lighting crossfade. */
+.room {
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  background: #17101a;
+  isolation: isolate;
+}
+
+.room::before,
+.room::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-position: center;
+  background-size: cover;
+  transition: opacity 900ms ease, filter 900ms ease;
+  pointer-events: none;
+}
+
+.room::before {
+  z-index: 0;
+  opacity: 1;
+  background-image: url("assets/room-starry-window.png");
+}
+
+.room::after {
+  z-index: 1;
+  opacity: 0;
+  background-image: url("assets/room-sunrise-window.png");
+}
+
+body.day-mode .room::before {
+  opacity: 0;
+}
+
+body.day-mode .room::after {
+  opacity: 1;
+}
+
+body.day-mode .room {
+  filter: none;
+}
+
+.wall-glow {
+  display: none;
+}
+
+.room-item {
+  z-index: 5;
+}
+
+.window {
+  left: 18%;
+  top: 3.5%;
+  width: 66%;
+  height: 58%;
+}
+
+.desk {
+  left: 0.5%;
+  bottom: 26%;
+  width: 32%;
+  height: 25%;
+}
+
+.computer {
+  left: 0.5%;
+  bottom: 36%;
+  width: 14.5%;
+  height: 20%;
+}
+
+.lamp {
+  left: 10.5%;
+  bottom: 36%;
+  width: 10.5%;
+  height: 17%;
+}
+
+.bed {
+  left: 0;
+  bottom: 0;
+  width: 70%;
+  height: 31%;
+}
+
+.drawer {
+  left: auto;
+  right: 2%;
+  bottom: 9%;
+  width: 16%;
+  height: 42%;
+  overflow: visible;
+}
+
+.wardrobe {
+  right: 1%;
+  top: 18%;
+  width: 14%;
+  height: 37%;
+}
+
+.warma {
+  left: 61%;
+  bottom: 0;
+  width: 17%;
+  height: 54%;
+}
+
+.speech-bubble {
+  left: 58%;
+  bottom: 58%;
+}
+
+@media (orientation: landscape) {
+  .page-shell {
+    width: min(1220px, calc(100% - 32px));
+  }
+
+  .room {
+    width: 100%;
+    max-height: calc(100vh - 220px);
+    min-height: 430px;
+  }
+}
+
+@media (orientation: portrait) {
+  .page-shell {
+    width: min(100% - 18px, 720px);
+    padding-top: 18px;
+  }
+
+  .room-wrap {
+    margin-inline: auto;
+  }
+
+  .room {
+    aspect-ratio: auto;
+    height: min(86vh, 980px);
+    min-height: 650px;
+  }
+
+  .room::before,
+  .room::after {
+    background-size: auto 100%;
+    background-position: 46% center;
+  }
+
+  .window {
+    left: 11%;
+    top: 3%;
+    width: 77%;
+    height: 50%;
+  }
+
+  .desk {
+    left: 2%;
+    bottom: 31%;
+    width: 38%;
+    height: 20%;
+  }
+
+  .computer {
+    left: 1%;
+    bottom: 41%;
+    width: 26%;
+    height: 13%;
+  }
+
+  .lamp {
+    left: 1%;
+    bottom: 37%;
+    width: 18%;
+    height: 16%;
+  }
+
+  .bed {
+    left: 0;
+    bottom: 0;
+    width: 76%;
+    height: 30%;
+  }
+
+  .drawer {
+    right: 1.2%;
+    bottom: 8%;
+    width: 24%;
+    height: 34%;
+  }
+
+  .wardrobe {
+    right: 1%;
+    top: 29%;
+    width: 22%;
+    height: 25%;
+  }
+
+  .warma {
+    left: 56%;
+    bottom: 1%;
+    width: 30%;
+    height: 42%;
+  }
+
+  .speech-bubble {
+    left: 16%;
+    right: 8%;
+    bottom: 47%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .room {
+    height: min(84vh, 860px);
+    min-height: 610px;
+  }
+
+  .room::before,
+  .room::after {
+    background-position: 45% center;
+  }
+
+  .drawer {
+    right: 0;
+    width: 27%;
+  }
+
+  .warma {
+    left: 53%;
+    width: 35%;
+  }
+}
+
+/* Make Warma feel placed inside the room instead of pasted on top. */
+.warma {
+  left: 62.5%;
+  bottom: 3.5%;
+  width: 14.5%;
+  height: 47%;
+  z-index: 4;
+  opacity: 0.94;
+  animation: floaty 5.2s ease-in-out infinite;
+  filter:
+    drop-shadow(-10px 18px 18px rgba(20, 10, 14, 0.34))
+    drop-shadow(6px 0 10px rgba(255, 182, 107, 0.08));
+}
+
+.warma::before {
+  content: "";
+  position: absolute;
+  left: 24%;
+  right: 18%;
+  bottom: 0.5%;
+  z-index: 1;
+  display: block;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18, 9, 14, 0.46), rgba(18, 9, 14, 0.12) 52%, transparent 72%);
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+.warma::after {
+  content: "";
+  position: absolute;
+  left: -18%;
+  right: -10%;
+  bottom: -2%;
+  z-index: 3;
+  display: block;
+  height: 25%;
+  border-radius: 50% 50% 8px 8px;
+  background:
+    radial-gradient(ellipse at 45% 95%, rgba(115, 70, 61, 0.34), transparent 66%),
+    linear-gradient(180deg, rgba(83, 50, 55, 0), rgba(64, 36, 42, 0.32) 62%, rgba(45, 26, 32, 0.42));
+  filter: blur(0.6px);
+  pointer-events: none;
+}
+
+.warma-art {
+  z-index: 2;
+  filter:
+    brightness(0.86)
+    contrast(0.92)
+    saturate(0.78)
+    sepia(0.08)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.24));
+}
+
+body.day-mode .warma-art {
+  filter:
+    brightness(0.96)
+    contrast(0.94)
+    saturate(0.82)
+    sepia(0.05)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.18));
+}
+
+.warma:hover,
+.warma:focus-visible {
+  transform: translateY(-2px);
+  opacity: 0.98;
+  filter:
+    drop-shadow(-10px 18px 18px rgba(20, 10, 14, 0.36))
+    drop-shadow(6px 0 10px rgba(255, 182, 107, 0.1));
+}
+
+@media (orientation: portrait) {
+  .warma {
+    left: 58%;
+    bottom: 4%;
+    width: 24%;
+    height: 38%;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .warma {
+    left: 57%;
+    width: 27%;
+    height: 38%;
+  }
+}
+
+/* Bed pose edition: Warma is part of the bedding scene, not a standing sprite. */
+.wardrobe {
+  display: none;
+  pointer-events: none;
+}
+
+.warma {
+  left: 36%;
+  bottom: 14%;
+  width: 38%;
+  height: 14%;
+  z-index: 4;
+  opacity: 0.9;
+  animation: none;
+  transform: rotate(-2deg);
+  filter:
+    drop-shadow(-12px 18px 18px rgba(18, 8, 12, 0.32))
+    drop-shadow(0 0 10px rgba(255, 178, 100, 0.08));
+}
+
+.warma:hover,
+.warma:focus-visible {
+  transform: rotate(-2deg) translateY(-1px);
+  opacity: 0.96;
+}
+
+.warma::before {
+  left: 8%;
+  right: 8%;
+  bottom: 2%;
+  height: 34%;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, rgba(15, 8, 12, 0.5), rgba(15, 8, 12, 0.15) 55%, transparent 76%);
+  filter: blur(8px);
+}
+
+.warma::after {
+  left: -6%;
+  right: -8%;
+  bottom: -15%;
+  height: 48%;
+  z-index: 3;
+  border-radius: 42% 50% 8px 8px;
+  background:
+    radial-gradient(ellipse at 34% 65%, rgba(126, 72, 65, 0.32), transparent 54%),
+    linear-gradient(180deg, rgba(76, 43, 48, 0), rgba(66, 37, 42, 0.3) 48%, rgba(43, 25, 31, 0.46));
+  filter: blur(0.8px);
+}
+
+.warma-art {
+  object-fit: contain;
+  object-position: center;
+  transition: opacity 220ms ease, filter 220ms ease;
+  filter:
+    brightness(0.8)
+    contrast(0.9)
+    saturate(0.72)
+    sepia(0.09)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.22));
+}
+
+.warma-art.is-changing {
+  opacity: 0;
+}
+
+body.day-mode .warma-art {
+  filter:
+    brightness(0.9)
+    contrast(0.92)
+    saturate(0.76)
+    sepia(0.05)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.16));
+}
+
+.speech-bubble {
+  left: 45%;
+  bottom: 39%;
+}
+
+@media (orientation: portrait) {
+  .warma {
+    left: 24%;
+    bottom: 14%;
+    width: 53%;
+    height: 12%;
+  }
+
+  .speech-bubble {
+    left: 15%;
+    right: 10%;
+    bottom: 34%;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .warma {
+    left: 22%;
+    bottom: 14%;
+    width: 58%;
+    height: 12%;
+  }
+}
+
+/* Emergency stable character placement: remove the broken flattened bed-pose layout. */
+.warma {
+  left: 61.5%;
+  bottom: 5%;
+  width: 16%;
+  height: 48%;
+  z-index: 4;
+  opacity: 0.9;
+  animation: none;
+  transform: none;
+  filter:
+    drop-shadow(-12px 18px 18px rgba(18, 8, 12, 0.34))
+    drop-shadow(5px 0 10px rgba(255, 178, 100, 0.08));
+}
+
+.warma:hover,
+.warma:focus-visible {
+  transform: translateY(-2px);
+  opacity: 0.96;
+}
+
+.warma::before {
+  content: "";
+  position: absolute;
+  left: 24%;
+  right: 18%;
+  bottom: 0.5%;
+  z-index: 1;
+  display: block;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18, 9, 14, 0.46), rgba(18, 9, 14, 0.12) 52%, transparent 72%);
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+.warma::after {
+  content: "";
+  position: absolute;
+  left: -18%;
+  right: -10%;
+  bottom: -2%;
+  z-index: 3;
+  display: block;
+  height: 24%;
+  border-radius: 50% 50% 8px 8px;
+  background:
+    radial-gradient(ellipse at 45% 95%, rgba(115, 70, 61, 0.34), transparent 66%),
+    linear-gradient(180deg, rgba(83, 50, 55, 0), rgba(64, 36, 42, 0.32) 62%, rgba(45, 26, 32, 0.42));
+  filter: blur(0.6px);
+  pointer-events: none;
+}
+
+.warma-art {
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transition: opacity 220ms ease, filter 220ms ease;
+  filter:
+    brightness(0.82)
+    contrast(0.9)
+    saturate(0.74)
+    sepia(0.08)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.22));
+}
+
+.warma-art.is-changing {
+  opacity: 0;
+}
+
+body.day-mode .warma-art {
+  filter:
+    brightness(0.92)
+    contrast(0.92)
+    saturate(0.78)
+    sepia(0.05)
+    drop-shadow(-7px 10px 10px rgba(10, 5, 9, 0.16));
+}
+
+.speech-bubble {
+  left: 56%;
+  bottom: 55%;
+}
+
+@media (orientation: portrait) {
+  .warma {
+    left: 55%;
+    bottom: 5%;
+    width: 29%;
+    height: 40%;
+  }
+
+  .speech-bubble {
+    left: 15%;
+    right: 8%;
+    bottom: 45%;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .warma {
+    left: 54%;
+    bottom: 5%;
+    width: 33%;
+    height: 39%;
+  }
+}
+
+/* Final background repair: old 3D pseudo-element transforms must not affect image layers. */
+.room {
+  position: relative;
+  overflow: hidden;
+  background: #17101a;
+  isolation: isolate;
+}
+
+.room::before,
+.room::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  transform-origin: center;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: opacity 900ms ease;
+  pointer-events: none;
+}
+
+.room::before {
+  z-index: 0;
+  opacity: 1;
+  background-image: url("assets/room-starry-window.png");
+}
+
+.room::after {
+  z-index: 1;
+  opacity: 0;
+  background-image: url("assets/room-sunrise-window.png");
+}
+
+body.day-mode .room::before {
+  opacity: 0;
+}
+
+body.day-mode .room::after {
+  opacity: 1;
+}
+
+.room-item,
+.speech-bubble {
+  z-index: 5;
+}
+
+.warma {
+  z-index: 6;
+}
+
+/* Drawer hotspot should use the drawer already present in the room image. */
+.drawer {
+  left: auto;
+  right: 3.5%;
+  bottom: 8%;
+  width: 14%;
+  height: 32%;
+  overflow: visible;
+}
+
+.drawer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 8px;
+  background: transparent;
+  opacity: 1;
+  filter: none;
+  pointer-events: none;
+}
+
+.drawer:hover::before,
+.drawer:focus-visible::before {
+  background:
+    radial-gradient(ellipse at 50% 58%, rgba(255, 216, 142, 0.14), rgba(255, 216, 142, 0.035) 56%, transparent 74%);
+  box-shadow: inset 0 0 0 1px rgba(255, 225, 171, 0.18);
+  filter: none;
+}
+
+@media (orientation: portrait) {
+  .drawer {
+    right: 2%;
+    bottom: 8%;
+    width: 22%;
+    height: 30%;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  .drawer {
+    right: 0;
+    width: 24%;
+  }
+}
+
+/* Six full-background mode: Warma is baked into the room images, not a separate layer. */
+.room::before {
+  background-image: var(--room-night-bg, url("assets/room-night-normal.png")) !important;
+}
+
+.room::after {
+  background-image: var(--room-day-bg, url("assets/room-day-normal.png")) !important;
+}
+
+.room.is-changing-outfit::before,
+.room.is-changing-outfit::after {
+  opacity: 0.35;
+}
+
+#warma.warma {
+  left: 57%;
+  bottom: 26%;
+  width: 18%;
+  height: 31%;
+  z-index: 6;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+#warma.warma:hover,
+#warma.warma:focus-visible {
+  transform: none;
+  background:
+    radial-gradient(ellipse at 50% 58%, rgba(255, 216, 142, 0.12), rgba(255, 216, 142, 0.025) 58%, transparent 74%);
+  box-shadow: inset 0 0 0 1px rgba(255, 225, 171, 0.16);
+}
+
+#warma.warma::before,
+#warma.warma::after,
+#warma .warma-art {
+  display: none !important;
+}
+
+@media (orientation: portrait) {
+  #warma.warma {
+    left: 56%;
+    bottom: 28%;
+    width: 25%;
+    height: 27%;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait) {
+  #warma.warma {
+    left: 54%;
+    bottom: 28%;
+    width: 29%;
+    height: 27%;
+  }
+}
+
+/* Smooth screen transitions and object-shaped hotspots. */
+.room-fade-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  opacity: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: opacity 820ms ease;
+  pointer-events: none;
+}
+
+.room-fade-layer.is-visible {
+  opacity: 1;
+}
+
+.room-item {
+  --hotspot-glow: rgba(255, 216, 142, 0.13);
+  --hotspot-line: rgba(255, 229, 183, 0.24);
+  border-radius: 0;
+}
+
+.room-item:hover,
+.room-item:focus-visible,
+#warma.warma:hover,
+#warma.warma:focus-visible {
+  background: radial-gradient(ellipse at center, var(--hotspot-glow), rgba(255, 216, 142, 0.025) 58%, transparent 76%);
+  box-shadow: inset 0 0 0 1px var(--hotspot-line);
+}
+
+.window {
+  clip-path: polygon(1% 2%, 99% 2%, 99% 97%, 1% 97%);
+  border-radius: 8px;
+}
+
+.photo-wall {
+  clip-path: polygon(4% 13%, 28% 5%, 43% 20%, 60% 8%, 96% 18%, 90% 88%, 10% 96%);
+}
+
+.sticky-notes {
+  clip-path: polygon(7% 3%, 66% 0, 96% 30%, 88% 96%, 18% 92%, 0 48%);
+}
+
+.desk {
+  clip-path: polygon(0 38%, 98% 23%, 100% 68%, 87% 86%, 11% 100%, 0 82%);
+}
+
+.computer {
+  clip-path: polygon(4% 7%, 88% 0, 98% 72%, 78% 100%, 12% 92%, 0 30%);
+}
+
+.lamp {
+  clip-path: polygon(34% 0, 74% 6%, 98% 44%, 67% 100%, 20% 94%, 0 46%);
+}
+
+.bed {
+  clip-path: polygon(4% 18%, 70% 0, 100% 18%, 98% 88%, 62% 100%, 3% 83%);
+}
+
+.drawer {
+  clip-path: polygon(8% 0, 94% 5%, 100% 92%, 16% 100%, 0 30%);
+}
+
+#warma.warma {
+  clip-path: polygon(46% 0, 64% 8%, 78% 23%, 86% 50%, 74% 92%, 51% 100%, 25% 90%, 13% 54%, 20% 22%);
+}
+
+.item-label {
+  clip-path: none;
+}
+
+@media (orientation: portrait) {
+  .desk {
+    clip-path: polygon(0 36%, 96% 22%, 100% 68%, 84% 88%, 9% 100%, 0 82%);
+  }
+
+  .bed {
+    clip-path: polygon(0 15%, 72% 0, 100% 18%, 98% 88%, 60% 100%, 0 83%);
+  }
+}

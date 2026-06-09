@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>留白的小房间</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="site-title">
+      <p class="eyebrow">A warm little personal room</p>
+      <h1 id="site-title">留白的小房间</h1>
+      <p class="subtitle">这里放着一些灵感、碎碎念、作品和没整理完的小心事。</p>
+      <div class="hero-actions" aria-label="首页操作">
+        <button class="soft-button" data-action="enter">进入房间</button>
+        <button class="soft-button secondary" data-action="random-room">随便看看</button>
+        <button class="soft-button ghost" data-action="drawer">找找彩蛋</button>
+      </div>
+    </section>
+
+    <section class="room-wrap" aria-label="留白的小房间互动首页">
+      <div class="room" id="room">
+        <div class="wall-glow" aria-hidden="true"></div>
+        <div class="room-fade-layer" id="roomFadeLayer" aria-hidden="true"></div>
+
+        <button class="room-item window" data-panel="window" aria-label="窗户：今日心情和今日天空">
+          <span class="night-sky">
+            <span class="moon"></span>
+            <span class="star star-a"></span>
+            <span class="star star-b"></span>
+            <span class="star star-c"></span>
+            <span class="cloud cloud-a"></span>
+            <span class="cloud cloud-b"></span>
+          </span>
+          <span class="window-frame"></span>
+          <span class="item-label">今日天空</span>
+        </button>
+
+        <button class="room-item photo-wall" data-panel="photos" aria-label="墙上照片：图片作品和照片收藏">
+          <span class="photo-card photo-one"></span>
+          <span class="photo-card photo-two"></span>
+          <span class="photo-card photo-three"></span>
+          <span class="item-label">照片墙</span>
+        </button>
+
+        <button class="room-item sticky-notes" data-panel="notes" aria-label="便利贴：灵感记录">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span class="item-label">灵感便利贴</span>
+        </button>
+
+        <button class="room-item wardrobe" data-panel="wardrobe" aria-label="衣柜：Warma 换装图鉴">
+          <span class="wardrobe-door left-door"></span>
+          <span class="wardrobe-door right-door"></span>
+          <span class="handle handle-left"></span>
+          <span class="handle handle-right"></span>
+          <span class="item-label">换装图鉴</span>
+        </button>
+
+        <button class="room-item bed" data-panel="bed" aria-label="小床：碎碎念和日常短句">
+          <span class="pillow"></span>
+          <span class="blanket"></span>
+          <span class="bed-leg leg-left"></span>
+          <span class="bed-leg leg-right"></span>
+          <span class="item-label">碎碎念</span>
+        </button>
+
+        <button class="room-item desk" data-panel="desk" aria-label="书桌：网页项目和小工具">
+          <span class="desk-top"></span>
+          <span class="desk-leg left"></span>
+          <span class="desk-leg right"></span>
+          <span class="item-label">项目书桌</span>
+        </button>
+
+        <button class="room-item computer" data-panel="computer" aria-label="电脑：作品展示">
+          <span class="monitor">
+            <span class="screen-line"></span>
+            <span class="screen-dot"></span>
+          </span>
+          <span class="monitor-stand"></span>
+          <span class="keyboard"></span>
+          <span class="item-label">作品电脑</span>
+        </button>
+
+        <button class="room-item drawer" data-panel="drawer" aria-label="抽屉：隐藏彩蛋">
+          <span class="drawer-box"></span>
+          <span class="drawer-knob"></span>
+          <span class="item-label">秘密抽屉</span>
+        </button>
+
+        <button class="room-item lamp" id="lampToggle" aria-label="台灯：切换星空和日出">
+          <span class="lamp-shade"></span>
+          <span class="lamp-light"></span>
+          <span class="lamp-stem"></span>
+          <span class="lamp-base"></span>
+          <span class="item-label">台灯</span>
+        </button>
+
+        <button class="room-item warma" id="warma" aria-label="Warma 小助手：点击换装并随机说一句话">
+          <img src="assets/warma-integrated.png" alt="" class="warma-art">
+          <span class="item-label">Warma</span>
+        </button>
+
+        <div class="speech-bubble" id="speechBubble" aria-live="polite">
+          欢迎来到留白的小房间。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="contentModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <button class="icon-button close-modal" type="button" aria-label="关闭弹窗">×</button>
+      <p class="modal-kicker" id="modalKicker">Room corner</p>
+      <h2 id="modalTitle">标题</h2>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="developer-panel" id="developerPanel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="developerTitle">
+    <div class="developer-card">
+      <div class="developer-head">
+        <div>
+          <p class="modal-kicker">Hidden console</p>
+          <h2 id="developerTitle">开发者数据面板</h2>
+        </div>
+        <button class="icon-button" id="closeDeveloper" type="button" aria-label="关闭开发者面板">×</button>
+      </div>
+      <p class="developer-help">在这里编辑房间数据 JSON。点击“应用修改”后会立即刷新页面内容。</p>
+      <textarea id="dataEditor" spellcheck="false" aria-label="网站数据 JSON 编辑器"></textarea>
+      <p class="developer-status" id="developerStatus" aria-live="polite">连续点击秘密抽屉 5 次可以再次打开这里。</p>
+      <div class="developer-actions">
+        <button class="soft-button" id="applyData" type="button">应用修改</button>
+        <button class="soft-button secondary" id="exportData" type="button">导出 JSON</button>
+        <button class="soft-button secondary" id="importData" type="button">导入 JSON</button>
+        <button class="soft-button ghost" id="resetData" type="button">重置默认</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
